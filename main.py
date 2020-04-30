@@ -3,18 +3,42 @@ import discord
 from discord.ext import commands
 # Supporting modules
 import re
+import traceback
 from datetime import datetime
+import mysql.connector
 import pytz
 # System modules
 import platform 
 import sys
 import os
 
-#######  Ordinary Python functions #######
+print("Bot started.")
+#############  Read the database #############
+try:
+    mydb = mysql.connector.connect(
+        host = "localhost",
+        user = "root",
+        passwd = "",
+        database = "llevent",
+        auth_plugin = "mysql_native_password"
+    )
+    sql = mydb.cursor()
+
+    print("Database connected successfully.")
+except Exception:
+    print(f"Error: {traceback.print_exc()}")
+
 def getTime(zone):
     now_utc = datetime.now(pytz.timezone("UTC"))
     now_zone = now_utc.astimezone(pytz.timezone(zone))
     return now_zone.strftime("%d/%m/%Y, %H:%M:%S")
+
+def query(queryStr):
+    try:
+        sql.execute(queryStr)
+        return sql.fetchall()
+    except Exception as e:
+        return repr(e)
 
 #############  Init bot ############# 
 TOKEN = "Njk0MTkxMTU5OTQ5MzkzOTgw.XqkGHQ.G_kobYaxKWpqSlTlVB3xEz-Unjw"
@@ -63,8 +87,7 @@ async def evaluate(ctx, *, arg):
 async def shutdown(ctx):
     print(f"{ctx.message.content} command called by {ctx.message.author}")
     elapsedSecs = datetime.now() - startTime
-    await ctx.send(f"""```Shutdown signal received. Shutting down.
-    Had been running for {elapsedSecs}```""")
+    await ctx.send(f"""```Shutdown signal received. Shutting down. \nHad been running for {elapsedSecs}```""")
     await ctx.bot.logout()
 
 # Test command
@@ -109,7 +132,8 @@ Due to limitations regarding message length, all events within the year cannot b
 `addevent` (bot owner): add an event to the existing event list.
 `shutdown` (bot owner): shutdown the bot.
 `purge <amount>` (admins only): delete a given amount of messages in the current channel.
-`evaluate <expression>`: evaluate a given expression."""
+`evaluate <expression>`: evaluate a given expression.
+`query <expression>`: run a query in the `llevent` database."""
 
     embed = discord.Embed()
     embed.title = f"**Minalinsky Bot v{ver}**"
@@ -148,10 +172,33 @@ async def time_at(ctx, arg = "UTC"):
     else: 
         await ctx.send(f"```Ima, {arg} de wa {getTime(arg)} desu.```")
 
+# Get all events in a given month
+@bot.command()
+async def events(ctx, month = datetime.now().month):
+    try:
+        queryStr = f"select * from events where extract(month from date) = {month}"
+        print(f"Query called by: {ctx.message.author}\n{queryStr}")
+        queryResult = query(queryStr)
+        
+        resultMessage = f"```md\nEvents list in Month {month}\nQuery string: {queryStr}\n\n"
+
+        longestDetailStr = str(max([len(record[2]) for record in queryResult]))
+        longestNoteStr = str(max([len(record[3]) for record in queryResult]))
+
+        for record in queryResult:
+            fmtString = ("{:2}  {:2}  {:" + longestDetailStr +  "}  {:" + longestNoteStr + "}\n").format(record[0].day, record[1], record[2], record[3])
+            resultMessage += fmtString
+        resultMessage += "```"
+        await ctx.send(resultMessage)       
+    except Exception:
+        eStr = f"{traceback.print_exc()}"
+        print(eStr)
+        await ctx.send(f"```{eStr}```")
+
 ############# Bot events ############# 
 @bot.event
 async def on_ready():
-    print("Bot started")
+    print("Bot ready.")
 
 @bot.event
 async def on_message(message):

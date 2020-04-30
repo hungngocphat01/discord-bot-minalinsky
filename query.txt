@@ -1,9 +1,0 @@
-create table events (
-date date not null,
-type varchar(3) not null,
-details text not null,
-note text,
-fullnote text
-);
-
-copy events from '~/git/discord-bot-minalinsky/event.csv' delimiters ',' csv;

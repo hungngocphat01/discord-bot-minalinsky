@@ -13,7 +13,7 @@ import sys
 import os
 
 print("Bot started.")
-#############  Read the database #############
+#############  Read the database on local #############
 try:
     mydb = psycopg2.connect(
         host = "localhost",
@@ -28,6 +28,17 @@ try:
 except Exception:
     print(f"Error: {traceback.print_exc()}")
     dbConnected = False
+#############  Read the database on Heroku #############
+# try:
+#     DATABASE_URL = os.environ['DATABASE_URL']
+#     mydb = psycopg2.connect(DATABASE_URL, sslmode='require')
+#     sql = mydb.cursor()
+
+#     print("Database connected successfully.")
+#     dbConnected = True
+# except Exception:
+#     print(f"Error: {traceback.print_exc()}")
+#     dbConnected = False
 
 def getTime(zone):
     now_utc = datetime.now(pytz.timezone("UTC"))
@@ -40,7 +51,6 @@ def query(queryStr):
         mydb.commit()
         return sql.fetchall()
     except Exception as e:
-        mydb.rollback()
         return repr(e)
 
 #############  Init bot ############# 
@@ -188,6 +198,7 @@ async def botquery(ctx, queryStr = None, calledFromMonthFunc = False):
                 queryResult = query(queryStr)
                 if dbConnected:
                     print(f"\nQuery called by: {ctx.message.author}\n{queryStr}")
+                    print(queryResult)
                     resultMessage = f"```python\nQuery result:\n\n"
                     longestLength = []
                     if type(queryResult) is list: 
@@ -261,7 +272,7 @@ async def events(ctx, month = datetime.now().month, full = None):
 async def nextev(ctx):
     print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
     currentDate = datetime.now().strftime("2010-%m-%d")
-    events = query(f"select * from events where date > '{currentDate}' limit 1")
+    events = query(f"select * from events where date = (select date from events where date > '{currentDate}' limit 1)")
     print(events)
     eventNo = 1
     eventTypes = {"BD": "Birthday", "AN": "Anime Episode with Insert Song", "RE": "Release", "SP": "Special"}
@@ -275,14 +286,16 @@ async def nextev(ctx):
         embed = discord.Embed()
         if (len(events) > 1):
             embed.title = f"Event {eventNo}"
+            eventNo += 1
         else:
             embed.title = f"Next event"
-            embed.add_field(name = "Date",    value = (str(event[0].day) + "/" + str(event[0].month)), inline = False)
-            embed.add_field(name = "Type",    value = eventTypes[event[1]]                           , inline = False)
-            embed.add_field(name = "Details", value = event[2]                                       , inline = True)
-            embed.add_field(name = "Note",    value = event[4]                                       , inline = True)
-            embed.color = discord.Colour.orange()
-            await ctx.send(embed = embed)  
+
+        embed.add_field(name = "Date",    value = (str(event[0].day) + "/" + str(event[0].month)), inline = False)
+        embed.add_field(name = "Type",    value = eventTypes[event[1]]                           , inline = False)
+        embed.add_field(name = "Details", value = event[2]                                       , inline = True)
+        embed.add_field(name = "Note",    value = event[4]                                       , inline = True)
+        embed.color = discord.Colour.orange()
+        await ctx.send(embed = embed)  
             
         
 ############# Bot events ############# 

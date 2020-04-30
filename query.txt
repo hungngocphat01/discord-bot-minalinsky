@@ -1,0 +1,14 @@
+create table events (
+date date not null,
+type varchar(3) not null,
+details nvarchar(50) not null,
+note nvarchar(30),
+fullnote nvarchar(50)
+);
+
+load data local infile './events.csv'
+into table events
+fields terminated by ','
+lines terminated by '\r\n'
+(@date, type, details, note, fullnote)
+set date = str_to_date(@date, '%d/%m/%Y');

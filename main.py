@@ -91,25 +91,25 @@ Current server: {ctx.guild}```"""
 async def help(ctx):
     print(f"{ctx.message.content} command called by {ctx.message.author}")
     embedDesc = f"""**Updated: {date}**
-    Under development.
+Under development.
     
-    **Command prefix:** %
-    **Supported commands:**
-    `help`: shows this help message.
-    `time`: returns the current time in Vietnam.
-    `jptime`: returns the current time in Japan.
-    `time_at Etc/<timezone>`: returns the current time in the given timezone.
-    Example: `%time_at Etc/GMT+9`.
+**Command prefix:** %
+**Supported commands:**
+`help`: shows this help message.
+`time`: returns the current time in Vietnam.
+`jptime`: returns the current time in Japan.
+`time_at Etc/<timezone>`: returns the current time in the given timezone.
+Example: `%time_at Etc/GMT+9`.
 
-    `events <month>`: returns a list of events in a given month. 
-    Constraint: 1 ≤ month ≤ 12.
-    Due to limitations regarding message length, all events within the year cannot be displayed at once.
+`events <month>`: returns a list of events in a given month. 
+Constraint: 1 ≤ month ≤ 12.
+Due to limitations regarding message length, all events within the year cannot be displayed at once.
 
-    **Special commands**
-    `addevent` (bot owner): add an event to the existing event list.
-    `shutdown` (bot owner): shutdown the bot.
-    `purge <amount>` (admins only): delete a given amount of messages in the current channel.
-    `evaluate <expression>`: evaluate a given expression."""
+**Special commands**
+`addevent` (bot owner): add an event to the existing event list.
+`shutdown` (bot owner): shutdown the bot.
+`purge <amount>` (admins only): delete a given amount of messages in the current channel.
+`evaluate <expression>`: evaluate a given expression."""
 
     embed = discord.Embed()
     embed.title = f"**Minalinsky Bot v{ver}**"

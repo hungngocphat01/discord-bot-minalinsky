@@ -52,10 +52,10 @@ async def evaluate(ctx, *, arg):
     if not re.search("import|open|def|sys|os", arg):
         try:
             await ctx.send(f"```{eval(arg)}```")
-        except Exception:
-            await ctx.send(f"```Error: {sys.exc_info()[0]}```")
+        except Exception as e:
+            await ctx.send(f"```Error: {repr(e)}```")
     else: 
-        ctx.send("```Dangerous operation detected. Command execution cancelled.```")
+        await ctx.send("```Dangerous operation detected. Command execution cancelled.```")
 
 # Shutdown command
 @bot.command()

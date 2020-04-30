@@ -1,14 +1,9 @@
 create table events (
 date date not null,
 type varchar(3) not null,
-details nvarchar(50) not null,
-note nvarchar(30),
-fullnote nvarchar(50)
+details text not null,
+note text,
+fullnote text
 );
 
-load data local infile './events.csv'
-into table events
-fields terminated by ','
-lines terminated by '\r\n'
-(@date, type, details, note, fullnote)
-set date = str_to_date(@date, '%d/%m/%Y');
+copy events from '~/git/discord-bot-minalinsky/event.csv' delimiters ',' csv;

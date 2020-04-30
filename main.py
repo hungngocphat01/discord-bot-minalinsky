@@ -5,7 +5,7 @@ from discord.ext import commands
 import re
 import traceback
 from datetime import datetime
-import mysql.connector
+import psycopg2
 import pytz
 # System modules
 import platform 
@@ -15,12 +15,11 @@ import os
 print("Bot started.")
 #############  Read the database #############
 try:
-    mydb = mysql.connector.connect(
+    mydb = psycopg2.connect(
         host = "localhost",
-        user = "root",
-        passwd = "",
-        database = "llevent",
-        auth_plugin = "mysql_native_password"
+        user = "ngocphat",
+        password = "3388",
+        database = "llevent"
     )
     sql = mydb.cursor()
 
@@ -38,8 +37,10 @@ def getTime(zone):
 def query(queryStr):
     try:
         sql.execute(queryStr)
+        mydb.commit()
         return sql.fetchall()
     except Exception as e:
+        mydb.rollback()
         return repr(e)
 
 #############  Init bot ############# 
@@ -189,21 +190,24 @@ async def botquery(ctx, queryStr = None, calledFromMonthFunc = False):
                     print(f"\nQuery called by: {ctx.message.author}\n{queryStr}")
                     resultMessage = f"```python\nQuery result:\n\n"
                     longestLength = []
-                    # Calculating longest record of each column
-                    for columnNo in range(0, len(queryResult[0])):
-                        array = [len(str(record[columnNo])) for record in queryResult]
-                        longestLength.append(str(max(array)))
-                    # Appending result to resultMessage
-                    for record in queryResult:
-                        # Read each column in current record
-                        for columnNo in range(0, len(record)):
-                            # Append current column
-                            resultMessage += ("{:" + longestLength[columnNo] + "}").format(str(record[columnNo]))
-                            # 2 spaces or new line?
-                            if columnNo < len(record) - 1:
-                                resultMessage += "  "
-                            else:
-                                resultMessage += "\n"
+                    if type(queryResult) is list: 
+                        # Calculating longest record of each column
+                        for columnNo in range(0, len(queryResult[0])):
+                            array = [len(str(record[columnNo])) for record in queryResult]
+                            longestLength.append(str(max(array)))
+                        # Appending result to resultMessage
+                        for record in queryResult:
+                            # Read each column in current record
+                            for columnNo in range(0, len(record)):
+                                # Append current column
+                                resultMessage += ("{:" + longestLength[columnNo] + "}").format(str(record[columnNo]))
+                                # 2 spaces or new line?
+                                if columnNo < len(record) - 1:
+                                    resultMessage += "  "
+                                else:
+                                    resultMessage += "\n"
+                    else:
+                        resultMessage += queryResult
                     resultMessage += "```"
                     await ctx.send(resultMessage)       
                 else:
@@ -243,21 +247,21 @@ Ex: %query "select * from events where date > '2010-4-1'"```""")
 async def events(ctx, month = datetime.now().month, full = None):
     monthName = datetime.now().strftime("%B")
     await ctx.send(f"List of events in {monthName}:")
-    if (full.lower() == "full"):
-        await botquery(ctx, f"\
-            select date, type, details, fullnote\
-            from events where extract(month from date) = {month}", True)
-    else:
+    if (full == None):
         await botquery(ctx, f"\
             select date, type, details, note\
+            from events where extract(month from date) = {month}", True)
+    elif (full.lower() == "full"):
+        await botquery(ctx, f"\
+            select date, type, details, fullnote\
             from events where extract(month from date) = {month}", True)
 
 # Query the next event
 @bot.command()
 async def nextev(ctx):
     print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
-    dateStrToCompare = datetime(2010, datetime.now().month, datetime.now().day).strftime("%y-%m-%d")
-    events = query(f"select * from events where date > '{dateStrToCompare}' limit 1")
+    currentDate = datetime.now().strftime("2010-%m-%d")
+    events = query(f"select * from events where date > '{currentDate}' limit 1")
     print(events)
     eventNo = 1
     eventTypes = {"BD": "Birthday", "AN": "Anime Episode with Insert Song", "RE": "Release", "SP": "Special"}

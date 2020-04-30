@@ -1,4 +1,4 @@
 discord.py
 pytz
-mysql-connector-python
+psycopg2
 

@@ -119,7 +119,7 @@ Due to limitations regarding message length, all events within the year cannot b
     await ctx.send(embed = embed)
 
 # Say command
-@bot.command(pass_context = True)
+@bot.command(pass_context = True, aliases = ["s"])
 async def say(ctx, *, arg):
     print(f"{ctx.message.content} command called by {ctx.message.author}")
     await ctx.send(arg)
@@ -167,7 +167,7 @@ async def on_message(message):
             await message.channel.send("Korekara wa yoroshiku ne!")
             triggered = True
         # Good night
-        elif (re.search("g9|night|good|oyasumi|ngủ", message.content.lower())) and (message.author.id != bot.user.id) and ("say" not in message.content):
+        elif (re.search("g9|night|good|oyasumi|ngủ", message.content.lower())) and (message.author.id != bot.user.id) and ("say" not in message.content.lower()):
             await message.channel.send("Oyasuminasaiiiii~")
             triggered = True
         # Bye

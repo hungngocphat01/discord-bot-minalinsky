@@ -35,6 +35,8 @@ try:
     dbConnected = True
 except Exception:
     print(f"Error: {traceback.print_exc()}")
+    sql.close()
+    mydb.close()
     dbConnected = False
 
 def getTime(zone):
@@ -104,6 +106,8 @@ async def evaluate(ctx, *, arg):
 async def shutdown(ctx):
     print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
     elapsedSecs = datetime.now() - startTime
+    sql.close()
+    mydb.close()
     await ctx.send(f"""```Shutdown signal received. Shutting down. \nHad been running for {elapsedSecs}```""")
     await ctx.bot.logout()
 
@@ -114,6 +118,8 @@ async def restart(ctx):
     print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
     if runningOnHeroku:
         await ctx.send(f"""```Restarting...```""")
+        sql.close()
+        mydb.close()
         await ctx.bot.logout()
     else:
         await ctx.send(f"""```Restart command can only be used if the bot is running on Heroku.```""")

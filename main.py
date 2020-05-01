@@ -35,8 +35,9 @@ try:
     dbConnected = True
 except Exception:
     print(f"Error: {traceback.print_exc()}")
-    sql.close()
-    mydb.close()
+    if dbConnected:
+        sql.close()
+        mydb.close()
     dbConnected = False
 
 def getTime(zone):
@@ -117,7 +118,8 @@ async def shutdown(ctx):
 async def restart(ctx):
     print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
     if runningOnHeroku:
-        await ctx.send(f"""```Restarting...```""")
+        elapsedSecs = datetime.now() - startTime
+        await ctx.send(f"""```Restarting...\nHad been running for {elapsedSecs}```""")
         sql.close()
         mydb.close()
         await ctx.bot.logout()
@@ -172,10 +174,11 @@ Due to limitations regarding message length, all events within the year cannot b
 **Warning:** can be improperly displayed in portrait mode (on mobile phones, etc).
 
 **Special commands**
-- `shutdown` (bot owner): shutdown the bot.
-- `purge <amount>` (admins only): delete a given amount of messages in the current channel.
-- `evaluate <expression>`: evaluate a given expression.
-- `query <expression>`: run a query in the `llevent` database. The query string MUST begin with 'select'"""
+- `shutdown` (bot owner): shutdowns the bot.
+- `restart` (everyone): disconnects the database and restarts the bot.
+- `purge <amount>` (admins only): deletes a given amount of messages in the current channel.
+- `evaluate <expression>`: evaluates a given expression.
+- `query <expression>`: runs a query in the `llevent` database. The query string MUST begin with 'select'"""
 
     embed = discord.Embed()
     embed.title = f"**Minalinsky Bot v{ver}**"
@@ -281,13 +284,13 @@ Ex: {COMMAND_PREFIX}query "select * from events where date > '2010-4-1'"```""")
 # Query events in a month
 @bot.command()
 async def events(ctx, month = datetime.now().month, full = None):
-    monthName = datetime.now().strftime("%B")
+    monthName = datetime(2020, month, 1).strftime("%B")
     await ctx.send(f"List of events in {monthName}:")
     if (full == None):
-        await botquery(ctx, f"select date, type, details, note from events where extract(month from date) = {month}", True)
+        await botquery(ctx, f"select extract(day from date)::numeric::integer, type, details, note from events where extract(month from date) = {month}", True)
 
     elif (full.lower() == "full"):
-        await botquery(ctx, f"select date, type, details, fullnote from events where extract(month from date) = {month}", True)
+        await botquery(ctx, f"select extract(day from date)::numeric::integer, type, details, fullnote from events where extract(month from date) = {month}", True)
 
 # Query the next event
 @bot.command()
@@ -348,7 +351,7 @@ async def on_message(message):
                 await message.channel.send(f"Mata ne~~")
                 triggered = True
             # DCSVN
-            elif re.match("đảng|đcs|cộng sản|3 que|3/|3///", message.content.lower()):
+            elif re.match("đảng|đcs|cộng sản|vn|việt nam|vietnam", message.content.lower()):
                 await message.channel.send("<:dang:694251236895227965> "*3)
                 triggered = True
             if (triggered): 
@@ -367,4 +370,10 @@ async def on_command_error(ctx, error):
     raise error
 
 ############# Run bot #############
-bot.run(TOKEN)
+try:
+    bot.run(TOKEN)
+except:
+    sql.close()
+    mydb.close()
+    print("Database disconnected.")
+    print("Bot stopped working.")

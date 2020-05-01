@@ -213,8 +213,8 @@ async def time_at(ctx, arg = "UTC"):
 async def botquery(ctx, queryStr = None, calledFromMonthFunc = False):
     if queryStr != None:
         if (queryStr.lower().lstrip().startswith("select")):
-            try:
-                queryResult = query(queryStr)
+            queryResult = query(queryStr)
+            try:               
                 if dbConnected:
                     print(f"\nQuery called by: {ctx.message.author}\n{queryStr}")
                     print(queryResult)
@@ -355,8 +355,8 @@ async def on_message(message):
 
 @bot.event
 async def on_command_error(ctx, error):
-    print(f"\nUnexisting '{ctx.message.content}' command called by {ctx.message.author}")
     if isinstance(error, discord.ext.commands.errors.CommandNotFound):
+        print(f"\nUnexisting '{ctx.message.content}' command called by {ctx.message.author}")
         await ctx.send(f"```Command not found: {ctx.message.content.split()[0]} ```")
     raise error
 

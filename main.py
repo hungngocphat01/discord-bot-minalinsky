@@ -219,7 +219,7 @@ async def time_at(ctx, arg = "UTC"):
 
 # Query command
 @bot.command(aliases = ["query"])
-async def botquery(ctx, queryStr = None, calledFromMonthFunc = False):
+async def botquery(ctx, queryStr = None):
     if queryStr != None:
         if (queryStr.lower().lstrip().startswith("select")):
             queryResult = query(queryStr)
@@ -283,15 +283,24 @@ Ex: {COMMAND_PREFIX}query "select * from events where date > '2010-4-1'"```""")
 
 # Query events in a month
 @bot.command()
-async def events(ctx, month = datetime.now().month, full = None):
-    monthName = datetime(2020, month, 1).strftime("%B")
-    await ctx.send(f"List of events in {monthName}:")
-    if (full == None):
-        await botquery(ctx, f"select extract(day from date)::numeric::integer, type, details, note from events where extract(month from date) = {month}", True)
+async def events(ctx, month = None, full = None):
+    try:
+        if (str(month).lower() == "full"):
+            month = datetime.now().month
+            full = "full"
+        elif (month == None):
+            month = datetime.now().month
 
-    elif (full.lower() == "full"):
-        await botquery(ctx, f"select extract(day from date)::numeric::integer, type, details, fullnote from events where extract(month from date) = {month}", True)
+        monthName = datetime(2020, int(month), 1).strftime("%B")
 
+        await ctx.send(f"List of events in {monthName}:")
+        if (full == None):
+            await botquery(ctx, f"select extract(day from date)::numeric::integer, type, details, note from events where extract(month from date) = {month}")
+        elif (full.lower() == "full"):
+            await botquery(ctx, f"select extract(day from date)::numeric::integer, type, details, fullnote from events where extract(month from date) = {month}")
+    except Exception as e:
+        await ctx.send(f"Error: {e}")
+        print("\nError:")
 # Query the next event
 @bot.command()
 async def nextev(ctx):

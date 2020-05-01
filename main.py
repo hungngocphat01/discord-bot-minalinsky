@@ -60,8 +60,8 @@ TOKEN = "Njk0MTkxMTU5OTQ5MzkzOTgw.XqkGHQ.G_kobYaxKWpqSlTlVB3xEz-Unjw"
 startTime = datetime.now()
 startTimeStr = getTime("Asia/Ho_Chi_Minh")
 
-ver = "1.0"
-date = "30/04/2020"
+ver = "1.5"
+date = "01/05/2020"
 
 if runningOnHeroku:
     COMMAND_PREFIX = "%"

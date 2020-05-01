@@ -14,13 +14,21 @@ import os
 
 print("Bot started.")
 #############  Read the database on local #############
+runningOnHeroku = (os.getenv("RUNNING_ON_HEROKU") == "1")
+
 try:
-    mydb = psycopg2.connect(
-        host = "localhost",
-        user = "ngocphat",
-        password = "3388",
-        database = "llevent"
-    )
+    # If running on Heroku
+    if runningOnHeroku:
+        DATABASE_URL = os.environ['DATABASE_URL']
+        mydb = psycopg2.connect(DATABASE_URL, sslmode='require')   
+    # If running on local machine
+    else:
+        mydb = psycopg2.connect(
+            host = "localhost",
+            user = "ngocphat",
+            password = "3388",
+            database = "llevent"
+        )
     sql = mydb.cursor()
 
     print("Database connected successfully.")
@@ -28,17 +36,6 @@ try:
 except Exception:
     print(f"Error: {traceback.print_exc()}")
     dbConnected = False
-#############  Read the database on Heroku #############
-# try:
-#     DATABASE_URL = os.environ['DATABASE_URL']
-#     mydb = psycopg2.connect(DATABASE_URL, sslmode='require')
-#     sql = mydb.cursor()
-
-#     print("Database connected successfully.")
-#     dbConnected = True
-# except Exception:
-#     print(f"Error: {traceback.print_exc()}")
-#     dbConnected = False
 
 def getTime(zone):
     now_utc = datetime.now(pytz.timezone("UTC"))
@@ -51,6 +48,7 @@ def query(queryStr):
         mydb.commit()
         return sql.fetchall()
     except Exception as e:
+        mydb.rollback()
         return repr(e)
 
 #############  Init bot ############# 
@@ -118,9 +116,15 @@ Minalinsky v{ver}
 Updated: {date}
 
 Running on: {platform.system()} {platform.release()}
+Heroku: {runningOnHeroku}
 Started at: {startTimeStr} (Asia/Ho_Chi_Minh)
 Current server: {ctx.guild}
-Database connected: {dbConnected}```"""
+Database connected: {dbConnected}"""
+
+    if dbConnected:
+        statusString += "\n" + str(query("select version()")) + "```"
+    else:
+        statusString += "```"
     await ctx.send(statusString)
 
 # Help command

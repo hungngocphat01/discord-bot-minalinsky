@@ -60,7 +60,13 @@ startTimeStr = getTime("Asia/Ho_Chi_Minh")
 ver = "1.0"
 date = "30/04/2020"
 
-bot = commands.Bot(command_prefix = "%")
+if runningOnHeroku:
+    COMMAND_PREFIX = "%"
+else:
+    COMMAND_PREFIX = "&"
+
+bot = commands.Bot(command_prefix = COMMAND_PREFIX)
+
 bot.remove_command("help")
 
 #############  Bot commands ############# 
@@ -101,6 +107,17 @@ async def shutdown(ctx):
     await ctx.send(f"""```Shutdown signal received. Shutting down. \nHad been running for {elapsedSecs}```""")
     await ctx.bot.logout()
 
+# Restart command
+@bot.command()
+@commands.is_owner()
+async def restart(ctx):
+    print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+    if runningOnHeroku:
+        await ctx.send(f"""```Restarting...```""")
+        await ctx.bot.logout()
+    else:
+        await ctx.send(f"""```Restart command can only be used if the bot is running on Heroku.```""")
+
 # Test command
 @bot.command()
 async def test(ctx):
@@ -122,7 +139,7 @@ Current server: {ctx.guild}
 Database connected: {dbConnected}"""
 
     if dbConnected:
-        statusString += "\n" + str(query("select version()")) + "```"
+        statusString += "\n" + str(query("select version()")[0]) + "```"
     else:
         statusString += "```"
     await ctx.send(statusString)
@@ -134,27 +151,25 @@ async def help(ctx):
     embedDesc = f"""**Updated: {date}**
 Under development.
     
-**Command prefix:** %
+**Command prefix:** {COMMAND_PREFIX}
 **Supported commands:**
-`help`: shows this help message.
-`time`: returns the current time in Vietnam.
-`jptime`: returns the current time in Japan.
-`time_at Etc/<timezone>`: returns the current time in the given timezone.
+- `help`: shows this help message.
+- `time`: returns the current time in Vietnam.
+- `jptime`: returns the current time in Japan.
+- `time_at Etc/<timezone>`: returns the current time in the given timezone.
 Example: `%time_at Etc/GMT+9`.
 
-`events <month> [full]`: returns a list of events in a given month. 
-Constraint: 1 ≤ month ≤ 12.
+- `events <month> [full]`: returns a list of events in a given month. 
+Constraint: `1 ≤ month ≤ 12`.
 Due to limitations regarding message length, all events within the year cannot be displayed at once.
-[full]: display note in full form
+- `full`: display note in full form
 **Warning:** can be improperly displayed in portrait mode (on mobile phones, etc).
 
 **Special commands**
-`addevent` (bot owner): add an event to the existing event list.
-`shutdown` (bot owner): shutdown the bot.
-`purge <amount>` (admins only): delete a given amount of messages in the current channel.
-`evaluate <expression>`: evaluate a given expression.
-`query <expression>`: run a query in the `llevent` database. The query string MUST begin with 'select'
-`sudoquery <expression> (owner only): run a query in the `llevent` database without any restrictions."""
+- `shutdown` (bot owner): shutdown the bot.
+- `purge <amount>` (admins only): delete a given amount of messages in the current channel.
+- `evaluate <expression>`: evaluate a given expression.
+- `query <expression>`: run a query in the `llevent` database. The query string MUST begin with 'select'"""
 
     embed = discord.Embed()
     embed.title = f"**Minalinsky Bot v{ver}**"
@@ -167,8 +182,8 @@ Due to limitations regarding message length, all events within the year cannot b
 @bot.command(pass_context = True, aliases = ["s"])
 async def say(ctx, *, arg):
     print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
-    await ctx.send(arg)
     await ctx.message.delete()
+    await ctx.send(arg)
 
 # VN Time command
 @bot.command(pass_context = True)
@@ -241,9 +256,9 @@ async def botquery(ctx, queryStr = None, calledFromMonthFunc = False):
             print(f"Query string: {queryStr}")
     # If query string is empty
     else:
-        await ctx.send("""```python
+        await ctx.send(f"""```python
 Query command usage:
-%query "<sql_query_string>" (with quote)
+{COMMAND_PREFIX}query "<sql_query_string>" (with quote)
 
 Query string MUST begin with 'SELECT'
 The table name is EVENTS.
@@ -255,7 +270,7 @@ There are 4 fields in the EVENTS table:
 - NOTE: Note of the event. Abbreviated to optimize displaying on mobile phones.
 - FULLNOTE: Note of the event. Not abbreviated.
 
-Ex: %query "select * from events where date > '2010-4-1'"```""")
+Ex: {COMMAND_PREFIX}query "select * from events where date > '2010-4-1'"```""")
 
 # Query events in a month
 @bot.command()
@@ -263,13 +278,10 @@ async def events(ctx, month = datetime.now().month, full = None):
     monthName = datetime.now().strftime("%B")
     await ctx.send(f"List of events in {monthName}:")
     if (full == None):
-        await botquery(ctx, f"\
-            select date, type, details, note\
-            from events where extract(month from date) = {month}", True)
+        await botquery(ctx, f"select date, type, details, note from events where extract(month from date) = {month}", True)
+
     elif (full.lower() == "full"):
-        await botquery(ctx, f"\
-            select date, type, details, fullnote\
-            from events where extract(month from date) = {month}", True)
+        await botquery(ctx, f"select date, type, details, fullnote from events where extract(month from date) = {month}", True)
 
 # Query the next event
 @bot.command()
@@ -340,6 +352,13 @@ async def on_message(message):
         await message.channel.send(f"```Error: {e}```Honoka-chaaaaaan. Mite mite~")
 
     await bot.process_commands(message)
+
+@bot.event
+async def on_command_error(ctx, error):
+    print(f"\nUnexisting '{ctx.message.content}' command called by {ctx.message.author}")
+    if isinstance(error, discord.ext.commands.errors.CommandNotFound):
+        await ctx.send(f"```Command not found: {ctx.message.content.split()[0]} ```")
+    raise error
 
 ############# Run bot #############
 bot.run(TOKEN)

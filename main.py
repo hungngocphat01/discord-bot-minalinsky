@@ -5,54 +5,37 @@ from discord.ext import commands
 import re
 import traceback
 from datetime import datetime
-import psycopg2
 import pytz
+
+# Database simulation libraries
+import pandas as pd
+import pandasql
+from tabulate import tabulate
+
 # System modules
 import platform 
 import sys
 import os
 
-print("Bot started.")
-#############  Read the database on local #############
 runningOnHeroku = (os.getenv("RUNNING_ON_HEROKU") == "1")
+print("Bot started.")
+#############  Read the database #############
+# Import database
+eventsdb = None
 
 try:
-    # If running on Heroku
-    if runningOnHeroku:
-        DATABASE_URL = os.environ['DATABASE_URL']
-        mydb = psycopg2.connect(DATABASE_URL, sslmode='require')   
-    # If running on local machine
-    else:
-        mydb = psycopg2.connect(
-            host = "localhost",
-            user = "ngocphat",
-            password = "3388",
-            database = "llevent"
-        )
-    sql = mydb.cursor()
+    eventsdb = pd.read_excel("evets.xlsx")
+except FileNotFoundError:
+    print("Database file not found. Please check again.")
 
-    print("Database connected successfully.")
-    dbConnected = True
-except Exception:
-    print(f"Error: {traceback.print_exc()}")
-    if dbConnected:
-        sql.close()
-        mydb.close()
-    dbConnected = False
+# Init pandasql
+pquery = lambda queryStr: pandasql.sqldf(queryStr, globals())
+query = lambda queryStr: tabulate(pquery(queryStr), showindex = False, headers = [])
 
 def getTime(zone):
     now_utc = datetime.now(pytz.timezone("UTC"))
     now_zone = now_utc.astimezone(pytz.timezone(zone))
     return now_zone.strftime("%d/%m/%Y, %H:%M:%S")
-
-def query(queryStr):
-    try:
-        sql.execute(queryStr)
-        mydb.commit()
-        return sql.fetchall()
-    except Exception as e:
-        mydb.rollback()
-        return repr(e)
 
 #############  Init bot ############# 
 TOKEN = "Njk0MTkxMTU5OTQ5MzkzOTgw.XqkGHQ.G_kobYaxKWpqSlTlVB3xEz-Unjw"
@@ -60,7 +43,7 @@ TOKEN = "Njk0MTkxMTU5OTQ5MzkzOTgw.XqkGHQ.G_kobYaxKWpqSlTlVB3xEz-Unjw"
 startTime = datetime.now()
 startTimeStr = getTime("Asia/Ho_Chi_Minh")
 
-ver = "1.5"
+ver = "1.7"
 date = "01/05/2020"
 
 if runningOnHeroku:
@@ -93,7 +76,7 @@ async def purge(ctx, amount = 0):
 @bot.command(pass_context = True, aliases = ["eval"])
 async def evaluate(ctx, *, arg):
     print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
-    if not re.search("import|open|def|sys|os", arg):
+    if (not re.search("import|open|def|sys|os", arg)) or ("owner" in ctx.message.author.lower()):
         try:
             await ctx.send(f"```{eval(arg)}```")
         except Exception as e:
@@ -107,8 +90,6 @@ async def evaluate(ctx, *, arg):
 async def shutdown(ctx):
     print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
     elapsedSecs = datetime.now() - startTime
-    sql.close()
-    mydb.close()
     await ctx.send(f"""```Shutdown signal received. Shutting down. \nHad been running for {elapsedSecs}```""")
     await ctx.bot.logout()
 
@@ -120,8 +101,6 @@ async def restart(ctx):
     if runningOnHeroku:
         elapsedSecs = datetime.now() - startTime
         await ctx.send(f"""```Restarting...\nHad been running for {elapsedSecs}```""")
-        sql.close()
-        mydb.close()
         await ctx.bot.logout()
     else:
         await ctx.send(f"""```Restart command can only be used if the bot is running on Heroku.```""")
@@ -144,12 +123,7 @@ Running on: {platform.system()} {platform.release()}
 Heroku: {runningOnHeroku}
 Started at: {startTimeStr} (Asia/Ho_Chi_Minh)
 Current server: {ctx.guild}
-Database connected: {dbConnected}"""
-
-    if dbConnected:
-        statusString += "\n" + str(query("select version()")[0]) + "```"
-    else:
-        statusString += "```"
+Database connected: {eventsdb != None}```"""
     await ctx.send(statusString)
 
 # Help command
@@ -220,60 +194,28 @@ async def time_at(ctx, arg = "UTC"):
 # Query command
 @bot.command(aliases = ["query"])
 async def botquery(ctx, queryStr = None):
+    print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
     if queryStr != None:
-        if (queryStr.lower().lstrip().startswith("select")):
-            queryResult = query(queryStr)
-            try:               
-                if dbConnected:
-                    print(f"\nQuery called by: {ctx.message.author}\n{queryStr}")
-                    print(queryResult)
-                    resultMessage = f"```python\nQuery result:\n\n"
-                    longestLength = []
-                    if type(queryResult) is list: 
-                        # Calculating longest record of each column
-                        for columnNo in range(0, len(queryResult[0])):
-                            array = [len(str(record[columnNo])) for record in queryResult]
-                            longestLength.append(str(max(array)))
-                        # Appending result to resultMessage
-                        for record in queryResult:
-                            # Read each column in current record
-                            for columnNo in range(0, len(record)):
-                                # Append current column
-                                resultMessage += ("{:" + longestLength[columnNo] + "}").format(str(record[columnNo]))
-                                # 2 spaces or new line?
-                                if columnNo < len(record) - 1:
-                                    resultMessage += "  "
-                                else:
-                                    resultMessage += "\n"
-                    else:
-                        resultMessage += queryResult
-                    resultMessage += "```"
-                    await ctx.send(resultMessage)       
-                else:
-                    await ctx.send("```Database has not been connected.```")
-                    print("\nQuerying was cancelled because DB not connected.")
-                return queryResult
-            except Exception as e:
-                eStr = f"Error: {e}\nQuery result: {queryResult}"
-                print(eStr)
-                await ctx.send(f"```{eStr}```")
-                return None
-        # If query string doesn't start with SELECT
-        else:
-            await ctx.send("```Querying is limited to SELECT only.```")
-            print("\nQuerying was cancelled because statement didn't begin with SELECT.")
-            print(f"Query string: {queryStr}")
-    # If query string is empty
+        try:
+            queryResult = "```css\nQuery result: \n\n"
+            queryResult += query(queryStr) + "```"
+            print(queryResult)
+            await ctx.send(queryResult)
+        except Exception as e:
+            eStr = f"Error: {e.__repr__()}"
+            print(eStr)
+            await ctx.send(eStr)
     else:
+        print("No query string detected.")
         await ctx.send(f"""```python
 Query command usage:
 {COMMAND_PREFIX}query "<sql_query_string>" (with quote)
 
-Query string MUST begin with 'SELECT'
-The table name is EVENTS.
+Query string have to be in SQLite syntax.
+The table name is EVENTSDB.
 The year in the DATE field of all records is 2010.
 There are 4 fields in the EVENTS table:
-- DATE
+- DATE: event date, stored in datetime format. To specify the format, use something like: "select strftime(date, "%d-%m") as date, ..."
 - TYPE ('BD' = 'Birthday', 'AN' = 'Anime Episode that has an Insert song', 'RE': 'Release of an important single or PV', 'SP': 'Special events')
 - DETAILS: the detail of the event.
 - NOTE: Note of the event. Abbreviated to optimize displaying on mobile phones.
@@ -295,18 +237,19 @@ async def events(ctx, month = None, full = None):
 
         await ctx.send(f"List of events in {monthName}:")
         if (full == None):
-            await botquery(ctx, f"select extract(day from date)::numeric::integer, type, details, note from events where extract(month from date) = {month}")
+            await botquery(ctx, f"select strftime('%d', date) as day, type, details, note from eventsdb where cast(strftime('%m', date) as integer) = {month}")
         elif (full.lower() == "full"):
-            await botquery(ctx, f"select extract(day from date)::numeric::integer, type, details, fullnote from events where extract(month from date) = {month}")
+            await botquery(ctx, f"select strftime('%d', date) as day, type, details, fullnote from eventsdb where cast(strftime('%m', date) as integer) = {month}")
     except Exception as e:
-        await ctx.send(f"Error: {e}")
-        print("\nError:")
+        await ctx.send(f"``Error: {e}``")
+        print(f"\nError: {e}")
+
 # Query the next event
 @bot.command()
 async def nextev(ctx):
     print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
     currentDate = datetime.now().strftime("2010-%m-%d")
-    events = query(f"select * from events where date = (select date from events where date > '{currentDate}' limit 1)")
+    events = pquery(f"select * from eventsdb where date = (select date from eventsdb where date > '{currentDate}' limit 1)").values.tolist()
     print(events)
     eventNo = 1
     eventTypes = {"BD": "Birthday", "AN": "Anime Episode with Insert Song", "RE": "Release", "SP": "Special"}
@@ -324,14 +267,29 @@ async def nextev(ctx):
         else:
             embed.title = f"Next event"
 
-        embed.add_field(name = "Date",    value = (str(event[0].day) + "/" + str(event[0].month)), inline = False)
-        embed.add_field(name = "Type",    value = eventTypes[event[1]]                           , inline = False)
-        embed.add_field(name = "Details", value = event[2]                                       , inline = True)
-        embed.add_field(name = "Note",    value = event[4]                                       , inline = True)
+        embed.add_field(name = "Date",
+            value = str(event[0].split("-")[2].split(" ")[0]) + "/" + str(event[0].split("-")[1]),
+            inline = False
+        )
+        embed.add_field(
+            name = "Type",
+            value = eventTypes[event[1]],
+            inline = False
+        )
+        embed.add_field(
+            name = "Details",
+            value = event[2], 
+            inline = True
+        )
+        embed.add_field(
+            name = "Note",
+            value = event[4],
+            inline = True
+        )
+
         embed.color = discord.Colour.orange()
         await ctx.send(embed = embed)  
-            
-        
+                 
 ############# Bot events ############# 
 @bot.event
 async def on_ready():
@@ -382,7 +340,4 @@ async def on_command_error(ctx, error):
 try:
     bot.run(TOKEN)
 except:
-    sql.close()
-    mydb.close()
-    print("Database disconnected.")
     print("Bot stopped working.")

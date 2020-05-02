@@ -19,12 +19,13 @@ import os
 
 runningOnHeroku = (os.getenv("RUNNING_ON_HEROKU") == "1")
 print("Bot started.")
+
 #############  Read the database #############
 # Import database
 eventsdb = None
 
 try:
-    eventsdb = pd.read_excel("evets.xlsx")
+    eventsdb = pd.read_excel("events.xlsx")
 except FileNotFoundError:
     print("Database file not found. Please check again.")
 

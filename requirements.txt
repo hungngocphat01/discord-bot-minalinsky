@@ -3,4 +3,4 @@ pytz
 pandas
 pandasql
 tabulate
-
+xlrd

@@ -6,6 +6,8 @@ import re
 import traceback
 from datetime import datetime
 import pytz
+import json
+import copy
 
 # Database simulation libraries
 import pandas as pd
@@ -17,6 +19,8 @@ import platform
 import sys
 import os
 
+ver = "2.0 beta"
+date = "02/05/2020"
 runningOnHeroku = (os.getenv("RUNNING_ON_HEROKU") == "1")
 print("Bot started.")
 
@@ -33,19 +37,31 @@ except FileNotFoundError:
 pquery = lambda queryStr: pandasql.sqldf(queryStr, globals())
 query = lambda queryStr: tabulate(pquery(queryStr), showindex = False, headers = [])
 
+# Read the emoji.json
+emojson = json.load(open("emoji.json"))
+
 def getTime(zone):
     now_utc = datetime.now(pytz.timezone("UTC"))
     now_zone = now_utc.astimezone(pytz.timezone(zone))
     return now_zone.strftime("%d/%m/%Y, %H:%M:%S")
+
+def differenceBetween(str1, str2):
+    diff = 0
+    if len(str1) > len(str2):
+        for char1 in str1:
+            for char2 in str2:
+                if char1 != char2: diff += 1
+    else:
+        for char2 in str2:
+            for char1 in str1:
+                if char1 != char2: diff += 1
+    return diff
 
 #############  Init bot ############# 
 TOKEN = "Njk0MTkxMTU5OTQ5MzkzOTgw.XqkGHQ.G_kobYaxKWpqSlTlVB3xEz-Unjw"
 
 startTime = datetime.now()
 startTimeStr = getTime("Asia/Ho_Chi_Minh")
-
-ver = "1.7"
-date = "01/05/2020"
 
 if runningOnHeroku:
     COMMAND_PREFIX = "%"
@@ -108,9 +124,39 @@ async def restart(ctx):
 
 # Test command
 @bot.command()
-async def test(ctx):
+async def emoji(ctx, emoname):
     print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
-    await ctx.send("This is just a fucking test function.")
+    try:
+        embed = discord.Embed()
+        embed.title = f"Emoji requested by {ctx.message.author}"
+        embed.set_image(url = str(emojson[emoname]))
+        await ctx.send(embed = embed)
+    except KeyError:
+        # Copy the emojson dictionary
+        diffs = copy.deepcopy(emojson)
+        # With each emoji, find the difference between its name and the input emoname
+        for key in diffs:
+            diffs[key] = differenceBetween(key, emoname)
+        # Find the one(s) closest to the input emoname
+        smallestDiff = min([diffs[key] for key in diffs])
+        # Take out their/its name
+        suggestions = [key for key in diffs if diffs[key] == smallestDiff]
+        # Build a suggestion string
+        suggestionString = f"```Emoji not found: '{emoname}'.\nDo you mean: "
+        # Append each suggestion into the string
+        for i in range(0, len(suggestions)):
+            suggestionString += f"'{suggestions[i]}'"
+            if i != len(suggestions) - 1:
+                suggestionString += " or "
+            suggestionString += "?```"
+        # Send it
+        print(suggestionString)
+        await ctx.send(suggestionString)
+    except Exception as e:
+        eStr = f"```Error: {e.__repr__()}```"
+        print(eStr)
+        await ctx.send(eStr)
+
 
 # Status command
 @bot.command(pass_context = True)
@@ -153,7 +199,7 @@ Due to limitations regarding message length, all events within the year cannot b
 - `restart` (everyone): disconnects the database and restarts the bot.
 - `purge <amount>` (admins only): deletes a given amount of messages in the current channel.
 - `evaluate <expression>`: evaluates a given expression.
-- `query <expression>`: runs a query in the `llevent` database. The query string MUST begin with 'select'"""
+- `query <expression>`: runs a query in the `lleventdb` table. The query string have to be in SQLite syntax."""
 
     embed = discord.Embed()
     embed.title = f"**Minalinsky Bot v{ver}**"
@@ -253,7 +299,7 @@ async def nextev(ctx):
     events = pquery(f"select * from eventsdb where date = (select date from eventsdb where date > '{currentDate}' limit 1)").values.tolist()
     print(events)
     eventNo = 1
-    eventTypes = {"BD": "Birthday", "AN": "Anime Episode with Insert Song", "RE": "Release", "SP": "Special"}
+    eventTypes = {"BD": "Birthday", "AN": "Anime Episode with Insert Song", "RE": "Release", "SP": "Special", "PV": "PV"}
 
     if (len(events) == 0):
         await ctx.send("The previous event is the final one within this year. See you again next year :penguin: ")

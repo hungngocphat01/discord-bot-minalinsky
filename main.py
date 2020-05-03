@@ -124,38 +124,74 @@ async def restart(ctx):
 
 # Test command
 @bot.command()
-async def emoji(ctx, emoname):
+async def emoji(ctx, emoname = None):
     print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
-    try:
-        embed = discord.Embed()
-        embed.title = f"Emoji requested by {ctx.message.author}"
-        embed.set_image(url = str(emojson[emoname]))
-        await ctx.send(embed = embed)
-    except KeyError:
-        # Copy the emojson dictionary
-        diffs = copy.deepcopy(emojson)
-        # With each emoji, find the difference between its name and the input emoname
-        for key in diffs:
-            diffs[key] = differenceBetween(key, emoname)
-        # Find the one(s) closest to the input emoname
-        smallestDiff = min([diffs[key] for key in diffs])
-        # Take out their/its name
-        suggestions = [key for key in diffs if diffs[key] == smallestDiff]
-        # Build a suggestion string
-        suggestionString = f"```Emoji not found: '{emoname}'.\nDo you mean: "
-        # Append each suggestion into the string
-        for i in range(0, len(suggestions)):
-            suggestionString += f"'{suggestions[i]}'"
-            if i != len(suggestions) - 1:
-                suggestionString += " or "
+    if emoname == None:
+        helpStr = f"""```Usage:
+{COMMAND_PREFIX}emoji list: list all emoji names (text only).
+{COMMAND_PREFIX}emoji <name>: send an emoji with given name.
+
+For preview of emojis, go to channel #usable-emoji```"""
+        await ctx.send(helpStr)
+    elif emoname.lower() == "list":
+        emojilistStr = f"```Emoji list:\n\n"
+        for key in emojson:
+            emojilistStr += str(key) + "\n"
+        emojilistStr += "```"
+        await ctx.send(emojilistStr)
+    else:
+        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        try:
+            embed = discord.Embed()
+            embed.title = f"Emoji requested by {ctx.message.author}"
+            embed.set_image(url = str(emojson[emoname]))
+            await ctx.send(embed = embed)
+        except KeyError:
+            suggestions = []
+            # Copy the emojson dictionary
+            diffs = copy.deepcopy(emojson)
+            # With each emoji, find the difference between its name and the input emoname
+            # At the same time, find emojis whose name contains the input emoname
+            for key in diffs:
+                # Calculate the difference
+                diffs[key] = differenceBetween(key, emoname)
+                # Check if it contains the emoname
+                if emoname.lower() in key.lower():
+                    suggestions.append(key)
+            # Find the one(s) closest to the input emoname
+            smallestDiff = min([diffs[key] for key in diffs])
+            # Take out their/its name
+            for key in diffs:
+                if diffs[key] == smallestDiff and key not in suggestions:
+                    suggestions.append(key)
+            # Build a suggestion string
+            suggestionString = f"```Emoji not found: '{emoname}'.\nDo you mean: "
+            # Append each suggestion into the string
+            for i in range(0, len(suggestions)):
+                suggestionString += f"'{suggestions[i]}'"
+                if i != len(suggestions) - 1:
+                    suggestionString += " or "
             suggestionString += "?```"
-        # Send it
-        print(suggestionString)
-        await ctx.send(suggestionString)
-    except Exception as e:
-        eStr = f"```Error: {e.__repr__()}```"
-        print(eStr)
-        await ctx.send(eStr)
+            # Send it
+            print(suggestionString)
+            await ctx.send(suggestionString)
+        except Exception as e:
+            eStr = f"```Error: {e.__repr__()}```"
+            print(eStr)
+            await ctx.send(eStr)
+
+# Send preview of emojis
+@bot.command()
+async def lsemo(ctx):
+    if (re.search("Owner|Admin|Tech", str(ctx.author.roles))):
+        await ctx.send("Emoji preview channel")
+        for emoji in emojson:
+            embed = discord.Embed()
+            embed.title = emoji
+            embed.set_image(url = emojson[emoji])
+            await ctx.send(embed = embed)
+    else:
+        await ctx.send("```Only admins can do this.```")
 
 
 # Status command
@@ -170,7 +206,7 @@ Running on: {platform.system()} {platform.release()}
 Heroku: {runningOnHeroku}
 Started at: {startTimeStr} (Asia/Ho_Chi_Minh)
 Current server: {ctx.guild}
-Database connected: {eventsdb != None}```"""
+Database connected: {eventsdb is not None}```"""
     await ctx.send(statusString)
 
 # Help command

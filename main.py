@@ -45,17 +45,19 @@ def getTime(zone):
     now_zone = now_utc.astimezone(pytz.timezone(zone))
     return now_zone.strftime("%d/%m/%Y, %H:%M:%S")
 
-def differenceBetween(str1, str2):
-    diff = 0
-    if len(str1) > len(str2):
-        for char1 in str1:
-            for char2 in str2:
-                if char1 != char2: diff += 1
+def similarityBetween(str1, str2):
+    same = 0
+    n1 = len(str1)
+    n2 = len(str2)
+
+    if n1 > n2:
+        Range = range(0, n2)
     else:
-        for char2 in str2:
-            for char1 in str1:
-                if char1 != char2: diff += 1
-    return diff
+        Range = range(0, n1)
+    for i in Range:
+        if str1[i] == str2[i]:
+            same += 1
+    return same
 
 #############  Init bot ############# 
 TOKEN = "Njk0MTkxMTU5OTQ5MzkzOTgw.XqkGHQ.G_kobYaxKWpqSlTlVB3xEz-Unjw"
@@ -122,8 +124,8 @@ async def restart(ctx):
     else:
         await ctx.send(f"""```Restart command can only be used if the bot is running on Heroku.```""")
 
-# Test command
-@bot.command()
+# Send emoji
+@bot.command(aliases = ["emo"])
 async def emoji(ctx, emoname = None):
     print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
     if emoname == None:
@@ -145,24 +147,25 @@ For preview of emojis, go to channel #usable-emoji```"""
             embed = discord.Embed()
             embed.title = f"Emoji requested by {ctx.message.author}"
             embed.set_image(url = str(emojson[emoname]))
-            await ctx.send(embed = embed)
+            await ctx.message.delete()
+            await ctx.send(embed = embed)        
         except KeyError:
             suggestions = []
             # Copy the emojson dictionary
-            diffs = copy.deepcopy(emojson)
-            # With each emoji, find the difference between its name and the input emoname
+            similars = copy.deepcopy(emojson)
+            # With each emoji, find the similarity between its name and the input emoname
             # At the same time, find emojis whose name contains the input emoname
-            for key in diffs:
-                # Calculate the difference
-                diffs[key] = differenceBetween(key, emoname)
+            for key in similars:
+                # Calculate the similarity
+                similars[key] = similarityBetween(key, emoname)
                 # Check if it contains the emoname
                 if emoname.lower() in key.lower():
                     suggestions.append(key)
             # Find the one(s) closest to the input emoname
-            smallestDiff = min([diffs[key] for key in diffs])
+            maxSimilarity = max([similars[key] for key in similars])
             # Take out their/its name
-            for key in diffs:
-                if diffs[key] == smallestDiff and key not in suggestions:
+            for key in similars:
+                if similars[key] == maxSimilarity and key not in suggestions:
                     suggestions.append(key)
             # Build a suggestion string
             suggestionString = f"```Emoji not found: '{emoname}'.\nDo you mean: "

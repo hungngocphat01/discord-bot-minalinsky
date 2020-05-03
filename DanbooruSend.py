@@ -28,7 +28,7 @@ Tags could be:
                 else:
                     posts = client.post_list(limit = num, random = True, tags = f"{tag}")
                 if len(posts) == 0:
-                    ctx.send(f"```No post found with tag(s): {tag}```")
+                    await ctx.send(f"```No post found with tag(s): {tag}```")
                 else:
                     for post in posts:
                         embed = discord.Embed()

@@ -5,6 +5,7 @@
 # Discord modules
 import discord
 from discord.ext import commands
+import traceback
 import re
 
 class BotEventListeners(commands.Cog):
@@ -18,8 +19,10 @@ class BotEventListeners(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, discord.ext.commands.errors.CommandNotFound):
-            print(f"\nUnexisting '{ctx.message.content}' command called by {ctx.message.author}")
+            print(f"\nUnexisted '{ctx.message.content}' command called by {ctx.message.author}")
             await ctx.send(f"```Command not found: {ctx.message.content.split()[0]} ```")
+        else:
+            await ctx.send(f"```Error: {error}\n{traceback.print_last()}```")
         raise error
 
     @commands.Cog.listener()

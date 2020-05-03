@@ -35,4 +35,4 @@ Tags could be:
                         embed.set_image(url = post['file_url'])
                         await ctx.send(embed = embed)
             else: 
-                ctx.send("```Max combo allowed is 6.```")
+                await ctx.send("```Max combo allowed is 6.```")

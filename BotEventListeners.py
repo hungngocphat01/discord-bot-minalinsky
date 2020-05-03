@@ -22,7 +22,11 @@ class BotEventListeners(commands.Cog):
             print(f"\nUnexisted '{ctx.message.content}' command called by {ctx.message.author}")
             await ctx.send(f"```Command not found: {ctx.message.content.split()[0]} ```")
         else:
-            await ctx.send(f"```Error: {error}\n{traceback.print_last()}```")
+            errorMsg = f"```Error: {error}\n"
+            errorMsg += traceback.format_exc().replace('```', '```')
+            errorMsg += "```"
+            print(errorMsg)
+            await ctx.send(errorMsg)
         raise error
 
     @commands.Cog.listener()

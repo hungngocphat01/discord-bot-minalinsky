@@ -22,14 +22,17 @@ Tags could be:
 - Many other types of tags.```"""
             await ctx.send(helpStr)
         else:
-            if (type(safe) is bool and safe):
-                posts = client.post_list(limit = num, random = True, tags = f"{tag} rating:safe")
-            else:
-                posts = client.post_list(limit = num, random = True, tags = f"{tag}")
-            if len(posts) == 0:
-                ctx.send(f"```No post found with tag(s): {tag}```")
-            else:
-                for post in posts:
-                    embed = discord.Embed()
-                    embed.set_image(url = post['file_url'])
-                    await ctx.send(embed = embed)
+            if num <= 6:
+                if (type(safe) is bool and safe):
+                    posts = client.post_list(limit = num, random = True, tags = f"{tag} rating:safe")
+                else:
+                    posts = client.post_list(limit = num, random = True, tags = f"{tag}")
+                if len(posts) == 0:
+                    ctx.send(f"```No post found with tag(s): {tag}```")
+                else:
+                    for post in posts:
+                        embed = discord.Embed()
+                        embed.set_image(url = post['file_url'])
+                        await ctx.send(embed = embed)
+            else: 
+                ctx.send("```Max combo allowed is 6.```")

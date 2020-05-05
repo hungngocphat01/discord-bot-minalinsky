@@ -13,7 +13,7 @@ from BasicCommands import BasicCommands
 from BotEventListeners import BotEventListeners
 from Emoji import Emoji
 from EventQuery import EventQuery
-from DanbooruSend import DanbooruSend
+from GelbooruSend import GelbooruSend
 
 bot = commands.Bot(command_prefix = COMMAND_PREFIX)
 bot.remove_command("help")
@@ -22,7 +22,7 @@ bot.add_cog(BotEventListeners(bot))
 bot.add_cog(BasicCommands(bot))
 bot.add_cog(EventQuery(bot))
 bot.add_cog(Emoji(bot))
-bot.add_cog(DanbooruSend(bot))
+bot.add_cog(GelbooruSend(bot))
 
 ############# Run bot #############
 try:

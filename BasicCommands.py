@@ -101,11 +101,13 @@ Database connected: {eventsdb is not None}```"""
 - `jptime`: returns the current time in Japan.
 - `time_at Etc/<timezone>`: returns the current time in the given timezone.
 Example: `%time_at Etc/GMT+9`.
+- `art`: send a number of images from Gelbooru (a Danbooru alternative). 
+Type ``{COMMAND_PREFIX}art`` for more information.
 
 - `events <month> [full]`: returns a list of events in a given month. 
 Constraint: `1 ≤ month ≤ 12`.
 Due to limitations regarding message length, all events within the year cannot be displayed at once.
-- `full`: display note in full form
+`full`: display note in full form
 **Warning:** can be improperly displayed in portrait mode (on mobile phones, etc).
 
 **Special commands**

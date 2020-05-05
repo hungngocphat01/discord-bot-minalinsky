@@ -1,5 +1,6 @@
 # This file defines the basic events of the bot, including:
 #   on_message
+#   on_command_error
 #   on_ready
 
 # Discord modules
@@ -23,7 +24,7 @@ class BotEventListeners(commands.Cog):
             await ctx.send(f"```Command not found: {ctx.message.content.split()[0]} ```")
         else:
             errorMsg = f"```Error: {error}\n"
-            errorMsg += traceback.format_exc().replace('```', '```')
+            errorMsg += traceback.format_exc().replace('```', r'\```')
             errorMsg += "```"
             print(errorMsg)
             await ctx.send(errorMsg)

@@ -38,6 +38,10 @@ Syntax: {COMMAND_PREFIX}art <tags> [<number of images> nsfw]
 
 <tags>: can be one or more. If there is more than one tag, join them with a | character.
 Example: kousaka_honoka|minami_kotori|yuri
+Tags could be:
+- Series name: love_live!, love_live_sunshine!!, bang ...
+- Character name: kousaka_honoka, nishikino_maki, hoshizora_rin, ... 
+- Many other types of tags.
 
 <number of images>: an integer represents number of images. Must be smaller or equal to 5.
 

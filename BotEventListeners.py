@@ -8,6 +8,7 @@ import discord
 from discord.ext import commands
 import traceback
 import re
+import random
 
 class BotEventListeners(commands.Cog):
     def __init__(self, bot):
@@ -37,7 +38,13 @@ class BotEventListeners(commands.Cog):
             if "say" not in message.content:
                 # Hello
                 if "hello" in message.content.lower():
-                    await message.channel.send(f"Okarinasai, {message.author.name}-sama!")
+                    responds = [
+                        f"Okaerinasai, {message.author.name}-sama!",
+                        "Lô lô cc",
+                        "Hai~. Okaeri~",
+                        "Konnichiwa~"
+                        ]
+                    await message.channel.send(random.choice(responds))
                     triggered = True
                 # Chào mọi người
                 elif "chào mọi người" in message.content.lower():
@@ -46,11 +53,21 @@ class BotEventListeners(commands.Cog):
                     triggered = True
                 # Good night
                 elif (re.search("g9|night|good|oyasumi|ngủ", message.content.lower())) and (message.author.id != self.bot.user.id):
-                    await message.channel.send("Oyasuminasaiiiii~")
+                    responds = [
+                        "Oyasuminasaiiiii~",
+                        "J ngủ ngon",
+                        "J chúc gặp nhiều ác mộng nha",
+                        "J giờ này mà ngủ à. Sớm thế"
+                        ]
+                    await message.channel.send(random.choice(responds))
                     triggered = True
                 # Bye
                 elif "bye" in message.content.lower():
-                    await message.channel.send(f"Mata ne~~")
+                    responds = [
+                        "Mata ne~~",
+                        "J đi luôn đi"
+                        ]
+                    await message.channel.send(random.choice(responds))
                     triggered = True
                 # DCSVN
                 elif re.match("đảng|đcs|cộng sản|vn|việt nam|vietnam", message.content.lower()):

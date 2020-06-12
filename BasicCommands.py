@@ -7,6 +7,7 @@
 #   help
 #   say
 #   time, jptime, time_at
+#   gem
 
 # Discord modules
 import discord
@@ -153,3 +154,19 @@ Due to limitations regarding message length, all events within the year cannot b
             await ctx.send(f"```{len(pytz.common_timezones)} timezones listed```")
         else: 
             await ctx.send(f"```python\nIma, {arg} de wa {getTime(arg)} desu.```")
+
+    async def gem(self, ctx):
+        print(f"\n'{ctx.message.content}' command ca    lled by {ctx.message.author}")
+        rates = [[86, 48.13], [50, 28.66], [26, 16.11], [12, 8.05], [5, 3.46], [1, 1.12]]
+        n_price = 0
+        n_quantity = int(ctx.message.content)
+        QUANTITY = 0
+        PRICE = 1
+        while n_quantity != 0:
+            for rate in rates:
+                if rate[QUANTITY] <= n_quantity:
+                    n_price += rate[PRICE]
+                    n_quantity -= rate[QUANTITY]
+                    break
+        await ctx.send(f"```{ctx.message.content} equals to {n_price} USD or {n_price * 23400} VND```")
+

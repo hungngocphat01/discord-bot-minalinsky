@@ -155,6 +155,7 @@ Due to limitations regarding message length, all events within the year cannot b
         else: 
             await ctx.send(f"```python\nIma, {arg} de wa {getTime(arg)} desu.```")
 
+    @commands.command()
     async def gem(self, ctx):
         print(f"\n'{ctx.message.content}' command ca    lled by {ctx.message.author}")
         rates = [[86, 48.13], [50, 28.66], [26, 16.11], [12, 8.05], [5, 3.46], [1, 1.12]]

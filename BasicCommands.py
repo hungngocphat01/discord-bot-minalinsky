@@ -169,5 +169,5 @@ Due to limitations regarding message length, all events within the year cannot b
                     n_price += rate[PRICE]
                     n_quantity -= rate[QUANTITY]
                     break
-        await ctx.send(f"```{arg} gems equals to approx. {n_price} USD or {n_price * 23400} VND```")
+        await ctx.send(f"```{arg} gems equals to approx. {n_price} USD or {int(n_price * 23400)} VND```")
 

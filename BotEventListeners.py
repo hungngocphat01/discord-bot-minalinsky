@@ -60,7 +60,7 @@ class BotEventListeners(commands.Cog):
                     await message.channel.send("Korekara wa yoroshiku ne!")
                     triggered = True
                 # Good night
-                elif (re.search("g9|night|good|oyasumi|ngủ", message.content.lower())) and (message.author.id != self.bot.user.id):
+                elif (re.search("g9|good night|oyasumi|đi ngủ", message.content.lower())) and (message.author.id != self.bot.user.id) and random.choice([True, False]):
                     responds = [
                         "Oyasuminasaiiiii~",
                         "J ngủ ngon",

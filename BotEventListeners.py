@@ -36,6 +36,14 @@ class BotEventListeners(commands.Cog):
         triggered = False
         try:
             if "say" not in message.content:
+                # Mentioned
+                if "694191159949393980" in message.content.lower():
+                    responds = [
+                        f"J sao {message.author.name}",
+                        "J kêu gì"
+                        ]
+                    await message.channel.send(random.choice(responds))
+                    triggered = True
                 # Hello
                 if "hello" in message.content.lower():
                     responds = [

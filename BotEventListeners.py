@@ -65,6 +65,8 @@ class BotEventListeners(commands.Cog):
                 elif "bye" in message.content.lower():
                     responds = [
                         "Mata ne~~",
+                        "Jaa ne~",
+                        "Byeee~",
                         "J đi luôn đi"
                         ]
                     await message.channel.send(random.choice(responds))

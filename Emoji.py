@@ -6,6 +6,7 @@ from BasicDefinitions import emojson, similarityBetween, COMMAND_PREFIX
 
 class Emoji(commands.Cog):
     def __init__(self, bot):
+        print("Module loaded: Emoji")
         self.bot = bot
 
     # Send emoji

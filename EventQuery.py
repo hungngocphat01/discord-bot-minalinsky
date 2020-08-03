@@ -7,6 +7,7 @@ from BasicDefinitions import pquery, eventsdb, query, COMMAND_PREFIX
 class EventQuery(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        print("Module loaded: EventQuery")
 
     # Query command
     @commands.command(aliases = ["query"])

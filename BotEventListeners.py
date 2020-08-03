@@ -13,6 +13,8 @@ import random
 class BotEventListeners(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        print("Module loaded: BotEventListeners")
+        
     ############# Bot events ############# 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -29,7 +31,6 @@ class BotEventListeners(commands.Cog):
             errorMsg += "```"
             print(errorMsg)
             await ctx.send(errorMsg)
-        raise error
 
     @commands.Cog.listener()
     async def on_message(self, message):

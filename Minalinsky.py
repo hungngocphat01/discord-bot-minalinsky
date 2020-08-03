@@ -16,7 +16,9 @@ from EventQuery import EventQuery
 from GelbooruSend import GelbooruSend
 
 bot = commands.Bot(command_prefix = COMMAND_PREFIX)
+# Remove the discord's default help command
 bot.remove_command("help")
+
 ############# Import Cogs #############
 bot.add_cog(BotEventListeners(bot))
 bot.add_cog(BasicCommands(bot))

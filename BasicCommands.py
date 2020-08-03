@@ -25,6 +25,8 @@ class BasicCommands(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
+        print("Module loaded: BasicCommands")
+    
     # Purge messages command
     @commands.command(pass_context = True)
     async def purge(self, ctx, amount = 0):

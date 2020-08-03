@@ -9,6 +9,7 @@ client = pygelbooru.Gelbooru()
 class GelbooruSend(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        print("Module loaded: GelbooruSend")
     
     @commands.command()
     async def art(self, ctx, tags = None, num = 1, nsfw = ""):

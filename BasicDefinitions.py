@@ -62,7 +62,7 @@ def similarityBetween(str1, str2):
     return same
 
 #############  Init bot ############# 
-TOKEN = "Njk0MTkxMTU5OTQ5MzkzOTgw.XqkGHQ.G_kobYaxKWpqSlTlVB3xEz-Unjw"
+TOKEN = string(os.getenv("BOT_TOKEN"))
 COMMAND_PREFIX = "%"
 
 startTime = datetime.now()

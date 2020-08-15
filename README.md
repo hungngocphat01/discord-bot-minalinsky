@@ -28,5 +28,5 @@ Using Python and Discord.Cog.
 - Etc.
 
 ## Environment variables
-- ``RUNNING_ON_HEROKU``: checks whether the bot is running on Heroku. This has to be set in your Heroku app settings. It will affect the bot's command prefix (e.g. one to trigger the Heroku instance and one to trigger the local instance).
+- ``RUNNING_ON_HEROKU`` (``0`` or ``1``): checks whether the bot is running on Heroku. This has to be set in your Heroku app settings. It will affect the bot's command prefix (e.g. one to trigger the Heroku instance and one to trigger the local instance).
 - ``BOT_TOKEN``: bot token.

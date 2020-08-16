@@ -74,6 +74,7 @@ class EventQuery(commands.Cog):
 
         if (len(events) == 0):
             await ctx.send("The previous event is the final one within this year. See you again next year :penguin: ")
+            return
         if (len(events) > 1):
             await ctx.send("Next events:")
 

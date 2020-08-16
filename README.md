@@ -18,6 +18,7 @@ Using Python and Discord.Cog.
 
 ## Features
 - Key feature: querying upcoming events of the Love Live! franchise (using pandasql to simulate SQLite's behavior).
+- Automatically notify 1 day prior to next event (exclusive and hard-coded).
 - ``say`` command.
 - ``time`` command.
 - Send custom emojis (defined in the ``emoji.json`` file).

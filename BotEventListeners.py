@@ -44,6 +44,8 @@ class BotEventListeners(commands.Cog):
                         curr_date = datetime(int(event_date_lst[0]), int(datetime.now().month), int(datetime.now().day))
                         delta = (event_date - curr_date).days
 
+                        print("Date delta: ", delta)
+
                         if (delta != 1):
                             break
 

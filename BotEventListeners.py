@@ -34,7 +34,6 @@ class BotEventListeners(commands.Cog):
                         eventNo = 1
 
                         if (len(events) == 0):
-                            await channel.send("The previous event is the final one within this year. See you again next year :penguin: ")
                             break
                         if (len(events) > 1):
                             await channel.send("Next events:")

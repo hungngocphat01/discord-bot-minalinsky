@@ -63,9 +63,75 @@ class BasicCommands(commands.Cog):
         await ctx.send(f"""```Shutdown signal received. Shutting down. \nHad been running for {elapsedSecs}```""")
         await ctx.bot.logout()
 
+    @commands.command()
+    async def stats(self, ctx):
+        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        if (ctx.guild is not None):
+            guild = ctx.guild
+            bot_num, online_num = 0, 0
+            for mem in guild.members:
+                if (mem.bot):
+                    bot_num += 1
+                elif (mem.status != discord.Status.offline):
+                    online_num += 1
+            
+            stats  = "```Guild information report\n\n"
+            stats += f"Guild name: {guild.name}\n"
+            stats += f"Region: {guild.region}\n"
+            stats += f"Text channels: {len(guild.text_channels)}\n"
+            stats += f"Members: {len(guild.members)}\n"
+            stats += f"Online: {online_num}, Bots: {bot_num}\n"
+            stats += f"Owner: {guild.owner.display_name}\n"
+            stats += f"Boosters: {[m.display_name for m in guild.premium_subscribers]}\n"
+            stats += "```"
+            await ctx.send(stats)
+
+    @commands.command()
+    async def whois(self, ctx):
+        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        mem = ctx.message.mentions[0]
+
+        if (mem is not None):
+            embed = discord.Embed(color=0xff7300)
+            embed.title = "Member information"
+            embed.set_image(url = mem.avatar_url)
+            embed.add_field(
+                name = "Name",
+                value = str(mem),
+                inline = True
+            )
+            embed.add_field(
+                name = "Display name",
+                value = mem.display_name,
+                inline = True
+            )
+            embed.add_field(
+                name = "Joined on",
+                value = mem.joined_at.strftime("%d-%m-%Y"),
+                inline = False
+
+            )
+            embed.add_field(
+                name = "Booster",
+                value = mem.premium_since.strftime("%d-%m-%Y") if mem.premium_since is not None else "No",
+                inline = True
+            )
+            embed.add_field(
+                name = "Status",
+                value = "Offine" if mem.status == discord.Status.offline else "Online",
+                inline = True
+            )
+            embed.add_field(
+                name = "Roles",
+                value = [role.name for role in mem.roles if role.name != "@everyone"],
+                inline = False
+            )
+            await ctx.send(embed=embed)
+        else:
+            await ctx.send("```Error: Cannot get member from mention```")
+
     # Restart command
     @commands.command()
-    @commands.is_owner()
     async def restart(self, ctx):
         print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
         if runningOnHeroku:

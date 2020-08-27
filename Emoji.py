@@ -30,7 +30,7 @@ class Emoji(commands.Cog):
             print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
             try:
                 embed = discord.Embed()
-                embed.title = f"Emoji requested by {ctx.message.author}"
+                embed.set_author(name = ctx.message.author.display_name, icon_url = ctx.message.author.avatar_url)
                 embed.set_image(url = str(emojson[emoname]))
                 await ctx.message.delete()
                 await ctx.send(embed = embed)        
@@ -53,7 +53,7 @@ class Emoji(commands.Cog):
                     if similars[key] == maxSimilarity and key not in suggestions:
                         suggestions.append(key)
                 # Build a suggestion string
-                suggestionString = f"```Emoji not found: '{emoname}'.\nDo you mean: "
+                suggestionString = f"```Emoji not found: '{emoname}'.\nDid you mean: "
                 # Append each suggestion into the string
                 for i in range(0, len(suggestions)):
                     suggestionString += f"'{suggestions[i]}'"

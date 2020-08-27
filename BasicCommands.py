@@ -121,9 +121,15 @@ class BasicCommands(commands.Cog):
                 value = "Offine" if mem.status == discord.Status.offline else "Online",
                 inline = True
             )
+
+            role_lst = ["@" + str(role) for role in mem.roles if role.name != "@everyone"]
+            role_str = ""
+            for role_span in role_lst:
+                role_str += role_span + " "
+
             embed.add_field(
                 name = "Roles",
-                value = [role.name for role in mem.roles if role.name != "@everyone"],
+                value = role_str,
                 inline = False
             )
             if (mem.activity is not None):

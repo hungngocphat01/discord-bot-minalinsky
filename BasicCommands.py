@@ -32,7 +32,7 @@ class BasicCommands(commands.Cog):
     async def purge(self, ctx, amount = 0):
         if (re.search("Owner|Admin|Tech", str(ctx.author.roles))):
             if amount > 0:
-                await ctx.channel.purge(limit = amount)
+                await ctx.channel.purge(limit = amount + 1)
                 await ctx.send(f"```🗑️ {amount} meseeji wo keshimashita~```")
             elif amount == 0:
                 await ctx.send("J xoá 0 tin nhắn là xoá thế nào.")
@@ -92,7 +92,7 @@ class BasicCommands(commands.Cog):
         mem = ctx.message.mentions[0]
 
         if (mem is not None):
-            embed = discord.Embed(color=0xff7300)
+            embed = discord.Embed(color=mem.color)
             embed.title = "Member information"
             embed.set_image(url = mem.avatar_url)
             embed.add_field(
@@ -126,6 +126,19 @@ class BasicCommands(commands.Cog):
                 value = [role.name for role in mem.roles if role.name != "@everyone"],
                 inline = False
             )
+            if (mem.activity is not None):
+                embed.add_field(
+                    name = "Currently " + \
+                    ("playing" if mem.activity.type == discord.ActivityType.playing \
+                    else "watching" if mem.activity.type == discord.ActivityType.watching \
+                    else "listening" if mem.activity.type == discord.ActivityType.listening \
+                    else "watching" if mem.activity.type == discord.ActivityType.watching \
+                    else "playing" if mem.activity.type == discord.ActivityType.playing \
+                    else "streaming" if mem.activity.type == discord.ActivityType.streaming \
+                    else "doing something with") + " " + mem.activity.name,
+                    value = mem.activity.details,
+                    inline = False
+                )
             await ctx.send(embed=embed)
         else:
             await ctx.send("```Error: Cannot get member from mention```")
@@ -156,42 +169,6 @@ Started at: {startTimeStr} (Asia/Ho_Chi_Minh)
 Current server: {ctx.guild}
 Database connected: {eventsdb is not None}```"""
         await ctx.send(statusString)
-
-    # Help command
-    @commands.command(pass_context = True, aliases = ['event, ev'])
-    async def help(self, ctx):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
-        embedDesc = f"""**Updated: {date}**
-        
-**Command prefix:** {COMMAND_PREFIX}
-**Supported commands:**
-- `help`: shows this help message.
-- `time`: returns the current time in Vietnam.
-- `jptime`: returns the current time in Japan.
-- `time_at Etc/<timezone>`: returns the current time in the given timezone.
-Example: `%time_at Etc/GMT+9`.
-- `art`: send a number of images from Gelbooru (a Danbooru alternative). 
-Type ``{COMMAND_PREFIX}art`` for more information.
-
-- `events <month> [full]`: returns a list of events in a given month. 
-Constraint: `1 ≤ month ≤ 12`.
-Due to limitations regarding message length, all events within the year cannot be displayed at once.
-`full`: display note in full form
-**Warning:** can be improperly displayed in portrait mode (on mobile phones, etc).
-
-**Special commands**
-- `shutdown` (bot owner): shutdowns the bot.
-- `restart` (everyone): disconnects the database and restarts the bot.
-- `purge <amount>` (admins only): deletes a given amount of messages in the current channel.
-- `evaluate <expression>`: evaluates a given expression.
-- `query <expression>`: runs a query in the `lleventdb` table. The query string have to be in SQLite syntax."""
-
-        embed = discord.Embed()
-        embed.title = f"**Minalinsky Bot v{ver}**"
-        embed.description = embedDesc
-        embed.color = discord.Colour.orange()
-
-        await ctx.send(embed = embed)
 
     # Say command
     @commands.command(pass_context = True, aliases = ["s"])

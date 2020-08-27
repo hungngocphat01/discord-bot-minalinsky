@@ -14,6 +14,7 @@ from BotEventListeners import BotEventListeners
 from Emoji import Emoji
 from EventQuery import EventQuery
 from GelbooruSend import GelbooruSend
+from SendHelpMsg import SendHelpMsg
 
 bot = commands.Bot(command_prefix = COMMAND_PREFIX)
 # Remove the discord's default help command
@@ -25,6 +26,7 @@ bot.add_cog(BasicCommands(bot))
 bot.add_cog(EventQuery(bot))
 bot.add_cog(Emoji(bot))
 bot.add_cog(GelbooruSend(bot))
+bot.add_cog(SendHelpMsg(bot))
 
 ############# Run bot #############
 try:

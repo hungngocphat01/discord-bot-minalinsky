@@ -12,28 +12,25 @@ class GelbooruSend(commands.Cog):
         print("Module loaded: GelbooruSend")
     
     @commands.command()
-    async def art(self, ctx, tags = None, num = 1, nsfw = ""):
+    async def art(self, ctx, tags = None, num = 1):
         print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
         if tags is not None:
             tagsLst = tags.split("|")
-            if ("nsfw" not in nsfw.lower()):
-                tagsLst.append("rating:safe")
-            if ("nsfw" in nsfw.lower() and not ctx.channel.nsfw):
-                await ctx.send("```You allowed nsfw images. This option only available in nsfw channels.```")
+            tagsLst.append("rating:safe")
+    
+            if num > 5:
+                await ctx.send("```To avoid spamming, only 5 images is accepted.```")
             else:
-                if num > 5:
-                    await ctx.send("```To avoid spamming, only 5 images is accepted.```")
-                else:
-                    for i in range(0, num):
-                        result = await client.random_post(tags = tagsLst)
-                        embed = discord.Embed()
-                        embed.set_image(url = str(result))
-                        await ctx.send(embed = embed)
+                for i in range(0, num):
+                    result = await client.random_post(tags = tagsLst)
+                    embed = discord.Embed()
+                    embed.set_image(url = str(result))
+                    await ctx.send(embed = embed)
         else:
             # Send help
             helpStr = f"""```
 art command usage
-This command is used to get a number of images from Gelbooru.
+This command is used to get a number of images from Gelbooru (safe only).
 
 Syntax: {COMMAND_PREFIX}art <tags> [<number of images> nsfw]
 
@@ -46,13 +43,50 @@ Tags could be:
 
 <number of images>: an integer represents number of images. Must be smaller or equal to 5.
 
-<nsfw>: specify whether nsfw images are accepted or not. 
-If its value is 'nsfw', returned images can randomly be either safe or not safe.
-You have to specify number of images before toggling the nsfw option.
-Only available in nsfw channel.
-
 Examples: 
 {COMMAND_PREFIX}art kousaka_honoka|sonoda_umi 5
-{COMMAND_PREFIX}art kousaka_honoka|nishikino_maki 1 nsfw```"""
+{COMMAND_PREFIX}art kousaka_honoka|nishikino_maki```"""
             await ctx.send(helpStr)
 
+
+    @commands.command()
+    async def hentai(self, ctx, tags = None, num = 1):
+        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+
+        if tags is not None:
+            if not ctx.channel.nsfw:
+                await ctx.send("```This command cannot be issued in a non-nsfw channel.```")
+                return
+
+            tagsLst = tags.split("|")
+            tagsLst.append("-rating:safe")
+            
+            if num > 5:
+                await ctx.send("```To avoid spamming, only 5 images is accepted.```")
+            else:
+                for i in range(0, num):
+                    result = await client.random_post(tags = tagsLst)
+                    embed = discord.Embed()
+                    embed.set_image(url = str(result))
+                    await ctx.send(embed = embed)
+        else:
+            # Send help
+            helpStr = f"""```
+hentai command usage
+This command is used to get a number of images from Gelbooru (guaranteed to be nsfw).
+
+Syntax: {COMMAND_PREFIX}hentai <tags> [<number of images>]
+
+<tags>: can be one or more. If there is more than one tag, join them with a | character.
+Example: kousaka_honoka|minami_kotori|yuri
+Tags could be:
+- Series name: love_live!, love_live!_sunshine!!, bang ...
+- Character name: kousaka_honoka, nishikino_maki, hoshizora_rin, ... 
+- Many other types of tags.
+
+<number of images>: an integer represents number of images. Must be smaller or equal to 5.
+
+Examples: 
+{COMMAND_PREFIX}hentai kousaka_honoka
+{COMMAND_PREFIX}hentai kousaka_honoka|nishikino_maki```"""
+            await ctx.send(helpStr)

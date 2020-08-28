@@ -38,6 +38,8 @@ class SendHelpMsg(commands.Cog):
             - `restart` (everyone): disconnects the database and restarts the bot. \n\
             - `purge <amount>` (admins only): deletes a given amount of messages in the current channel. \n\
             - `evaluate <expression>`: evaluates a given expression. \n\
+            - `allroles <target_member> <command>`: give/delete all ``oshi`` roles to/from a specific member. \n\
+            - `premium <target_member> <command>`: give/delete premium membership to/from a specific member. \n\
             - `query <expression>`: runs a query in the `eventsdb` table. The query string has to be in SQLite syntax. \n\n\
             To show a command's help message, run `{COMMAND_PREFIX}help <command_name>`."
         else:
@@ -58,8 +60,16 @@ class SendHelpMsg(commands.Cog):
             elif cmd == "events":
                 embedDesc = "Run without argument to query events within the current month.\n\
                     1 optional argument: month in which event list needs to be queried."
+            elif cmd == "allroles":
+                embedDesc = "[Admins only] 2 args:\n\
+                - A ``discord.Mention`` to the target member \n\
+                - Command keyword: ``give`` or ``delete``"
+            elif cmd == "premium":
+                embedDesc = "[Admins only] 2 args:\n\
+                - A ``discord.Mention`` to the target member \n\
+                - Command keyword: ``give`` or ``delete``"
             else:
-                embedDesc = "This command does not have a help message."
+                embedDesc = "Unknown command or this command does not have a help message."
 
 
         embed.description = embedDesc

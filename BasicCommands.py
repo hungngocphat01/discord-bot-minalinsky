@@ -86,69 +86,6 @@ class BasicCommands(commands.Cog):
             stats += "```"
             await ctx.send(stats)
 
-    @commands.command()
-    async def whois(self, ctx):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
-        mem = ctx.message.mentions[0]
-
-        if (mem is not None):
-            embed = discord.Embed(color=mem.color)
-            embed.title = "Member information"
-            embed.set_image(url = mem.avatar_url)
-            embed.add_field(
-                name = "Name",
-                value = str(mem),
-                inline = True
-            )
-            embed.add_field(
-                name = "Display name",
-                value = mem.display_name,
-                inline = True
-            )
-            embed.add_field(
-                name = "Joined on",
-                value = mem.joined_at.strftime("%d-%m-%Y"),
-                inline = False
-
-            )
-            embed.add_field(
-                name = "Booster",
-                value = mem.premium_since.strftime("%d-%m-%Y") if mem.premium_since is not None else "No",
-                inline = True
-            )
-            embed.add_field(
-                name = "Status",
-                value = "Offine" if mem.status == discord.Status.offline else "Online",
-                inline = True
-            )
-
-            role_lst = ["@" + str(role) for role in mem.roles if role.name != "@everyone"]
-            role_str = ""
-            for role_span in role_lst:
-                role_str += role_span + " "
-
-            embed.add_field(
-                name = "Roles",
-                value = role_str,
-                inline = False
-            )
-            if (mem.activity is not None):
-                embed.add_field(
-                    name = "Currently " + \
-                    ("playing" if mem.activity.type == discord.ActivityType.playing \
-                    else "watching" if mem.activity.type == discord.ActivityType.watching \
-                    else "listening" if mem.activity.type == discord.ActivityType.listening \
-                    else "watching" if mem.activity.type == discord.ActivityType.watching \
-                    else "playing" if mem.activity.type == discord.ActivityType.playing \
-                    else "streaming" if mem.activity.type == discord.ActivityType.streaming \
-                    else "doing something with") + " " + mem.activity.name,
-                    value = mem.activity.details,
-                    inline = False
-                )
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send("```Error: Cannot get member from mention```")
-
     # Restart command
     @commands.command()
     async def restart(self, ctx):

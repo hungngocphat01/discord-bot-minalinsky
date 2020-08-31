@@ -139,3 +139,48 @@ class MemberManagement(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send("```Error: Cannot get member from mention```")
+
+    @commands.command()
+    async def setrole(self, ctx, cmd, mention, rolename):
+        admin_roles_id = [694197858127052810, 694410785048231968, 703534853001314344, 694844619698995280]
+        
+        mem = ctx.message.mentions[0]
+        # LLMFVN exclusive feature
+        if (str(ctx.guild.id) != "694173494052651020"):
+            await ctx.send("```This is a Love Live µ'sic Forever VN exclusive feature.```")
+            return
+        if (ctx.author.top_role.id not in admin_roles_id):
+            await ctx.send("```Only admins can issue this command.```")
+            return
+        if (cmd not in ["give", "delete"]):
+            await ctx.send("```Parameter is missing or wrongly specified.```")
+            return
+        if (mem is None):
+            await ctx.send(f"```No such member.```")
+            return
+
+        if (cmd == "give"):
+            # Get the role
+            role = None
+            for r in ctx.guild.roles:
+                if (r.name ==  rolename):
+                    role = r
+                    break
+            if (role is None):
+                await ctx.send(f"```No such role: {rolename}.```")
+                return
+            await mem.add_roles(role)
+            await ctx.send(f"```Role \"{rolename}\" gave to {mem.display_name}```")
+        elif (cmd == "delete"):
+            removed = False
+            roles = mem.roles
+            for r in roles:
+                if r.name == rolename:
+                    roles.remove(r)
+                    await mem.edit(roles = roles)
+                    removed = True
+                    break
+            if not removed:
+                await ctx.send(f"```No such role: {rolename}.```")
+            else:
+                await ctx.send(f"```Role \"{rolename}\" deleted from {mem.display_name}```")

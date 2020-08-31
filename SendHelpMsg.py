@@ -38,6 +38,7 @@ class SendHelpMsg(commands.Cog):
             - `restart` (everyone): disconnects the database and restarts the bot. \n\
             - `purge <amount>` (admins only): deletes a given amount of messages in the current channel. \n\
             - `evaluate <expression>`: evaluates a given expression. \n\
+            - `setrole <verb> <target_member> <role_name>`: give/delete a specific role to/from a specific member \n\
             - `allroles <target_member> <command>`: give/delete all ``oshi`` roles to/from a specific member. \n\
             - `premium <target_member> <command>`: give/delete premium membership to/from a specific member. \n\
             - `query <expression>`: runs a query in the `eventsdb` table. The query string has to be in SQLite syntax. \n\n\
@@ -68,9 +69,13 @@ class SendHelpMsg(commands.Cog):
                 embedDesc = "[Admins only] 2 args:\n\
                 - A ``discord.Mention`` to the target member \n\
                 - Command keyword: ``give`` or ``delete``"
+            elif cmd == "setrole":
+                embedDesc = "[Admins only] 3 args:\n\
+                - Command keyword: ``give`` or ``delete``\n\
+                - A ``discord.Mention`` to the target member \n\
+                - A string denoting the role's name (must be enclosed with quotes if white space char is present)."
             else:
                 embedDesc = "Unknown command or this command does not have a help message."
-
 
         embed.description = embedDesc
         embed.color = discord.Colour.orange()

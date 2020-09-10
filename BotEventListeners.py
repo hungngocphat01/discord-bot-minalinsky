@@ -45,7 +45,7 @@ class BotEventListeners(commands.Cog):
 
                         print("Date delta: ", delta)
 
-                        if (delta != 1):
+                        if (delta != 2):
                             break
 
                         for event in events:

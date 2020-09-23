@@ -142,7 +142,7 @@ class MemberManagement(commands.Cog):
 
     @commands.command()
     async def setrole(self, ctx, cmd, mention, rolename):
-        admin_roles_id = [694197858127052810, 694410785048231968, 703534853001314344, 694844619698995280]
+        admin_roles_id = [694197858127052810, 703534853001314344, 694844619698995280]
         
         mem = ctx.message.mentions[0]
         # LLMFVN exclusive feature
@@ -168,6 +168,9 @@ class MemberManagement(commands.Cog):
                     break
             if (role is None):
                 await ctx.send(f"```No such role: {rolename}.```")
+                return
+            elif (role.id ):
+                await ctx.send(f"```Permission denied: {rolename} must be given manually.```")
                 return
             await mem.add_roles(role)
             await ctx.send(f"```Role \"{rolename}\" gave to {mem.display_name}```")

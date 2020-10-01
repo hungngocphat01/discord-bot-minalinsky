@@ -5,6 +5,7 @@
 
 # Discord modules
 import discord
+import json
 from discord.ext import commands
 import traceback
 import re
@@ -15,6 +16,7 @@ from BasicDefinitions import pquery
 class BotEventListeners(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
+        self.responses_json = json.load(open("responses.json"))
         print("Module loaded: BotEventListeners")
         
     ############# Bot events ############# 
@@ -97,55 +99,14 @@ class BotEventListeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        triggered = False
         try:
             if "say" not in message.content:
-                # Mentioned
-                if "694191159949393980" in message.content.lower():
-                    responds = [
-                        f"J kêu cc",
-                        "J kêu gì",
-                        "J có gì ko",
-                        "J"
-                        ]
-                    await message.channel.send(random.choice(responds))
-                    triggered = True
-                # Hello
-                if "hello" in message.content.lower():
-                    responds = [
-                        f"Okaerinasai, {message.author.name}-sama!",
-                        "Lô lô cc",
-                        "Hai~. Okaeri~",
-                        "Konnichiwa~"
-                        ]
-                    await message.channel.send(random.choice(responds))
-                    triggered = True
-                # Good night
-                elif (re.search("g9|good night|oyasumi|đi ngủ", message.content.lower())) and (message.author.id != self.bot.user.id):
-                    responds = [
-                        "Oyasuminasaiiiii~",
-                        "J ngủ ngon",
-                        "J chúc gặp nhiều ác mộng nha",
-                        "J giờ này mà ngủ à. Sớm thế"
-                        ]
-                    await message.channel.send(random.choice(responds))
-                    triggered = True
-                # Bye
-                elif "bye" in message.content.lower():
-                    responds = [
-                        "Mata ne~~",
-                        "Jaa ne~",
-                        "Byeee~",
-                        "J đi luôn đi"
-                        ]
-                    await message.channel.send(random.choice(responds))
-                    triggered = True
-                # DCSVN
-                elif re.match("đảng|đcs|cộng sản|vn|việt nam|vietnam", message.content.lower()):
-                    await message.channel.send("<:dang:694251236895227965> "*3)
-                    triggered = True
-                if (triggered): 
-                    print(f"\nMessage triggered: \"{message.content}\", Channel: #{message.channel.name}")
-
+                for regex in self.responses_json:
+                    if (re.search(regex, message.content.lower())):
+                        randomRespond = random.choice(self.responses_json[regex])
+                        await message.channel.send(randomRespond)
+                        print(f"\nMessage triggered: \"{message.content}\", Channel: #{message.channel.name}")
+                        print(f"Response: {randomRespond}")
+                        break
         except Exception as e:
             await message.channel.send(f"```Error: {e}```Honoka-chaaaaaan. Mite mite~")

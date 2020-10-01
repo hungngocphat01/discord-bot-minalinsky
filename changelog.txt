@@ -1,0 +1,11 @@
+# Older
+Don't remember anything.
+
+# Ver 3.5
+- Starts to record changelog.
+- Migrates responses to a discrete json file.
+- Improvement in %whois: role color.
+
+# Ver 3.6
+- Improvement in %whois: special permissions.
+- Fix "no details" bug with %whois.

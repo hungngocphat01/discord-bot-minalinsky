@@ -113,7 +113,7 @@ class MemberManagement(commands.Cog):
                 inline = True
             )
 
-            role_lst = ["@" + str(role) for role in mem.roles if role.name != "@everyone"]
+            role_lst = [role.mention for role in mem.roles if role.name != "@everyone"]
             role_str = ""
             for role_span in role_lst:
                 role_str += role_span + " "
@@ -133,7 +133,7 @@ class MemberManagement(commands.Cog):
                     else "playing" if mem.activity.type == discord.ActivityType.playing \
                     else "streaming" if mem.activity.type == discord.ActivityType.streaming \
                     else "doing something with") + " " + mem.activity.name,
-                    value = mem.activity.details,
+                    value = mem.activity.details if "details" in dir(mem.activity) else "",
                     inline = False
                 )
             await ctx.send(embed=embed)

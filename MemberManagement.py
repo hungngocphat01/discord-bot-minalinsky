@@ -123,6 +123,41 @@ class MemberManagement(commands.Cog):
                 value = role_str,
                 inline = False
             )
+
+            special_perms = ""
+            if mem.guild_permissions.administrator:
+                special_perms += "Administrator" + ", "
+            else:
+                if mem.guild_permissions.ban_members:
+                    special_perms += "Ban members" + ", "
+                if mem.guild_permissions.kick_members:
+                    special_perms += "Kick members" + ", "
+                if mem.guild_permissions.manage_channels:
+                    special_perms += "Manage channels" + ", "
+                if mem.guild_permissions.manage_guild:
+                    special_perms += "Manage guild" + ", "
+                if mem.guild_permissions.view_audit_log:
+                    special_perms += "View audit log" + ", "
+                if mem.guild_permissions.manage_messages:
+                    special_perms += "Manage messages" + ", "
+                if mem.guild_permissions.mute_members:
+                    special_perms += "Mute members" + ", "
+                if mem.guild_permissions.deafen_members:
+                    special_perms += "Deafen members" + ", "
+                if mem.guild_permissions.manage_nicknames:
+                    special_perms += "Manage nicknames" + ", "
+                if mem.guild_permissions.manage_roles:
+                    special_perms += "Manage roles" + ", "
+                if mem.guild_permissions.manage_permissions:
+                    special_perms += "Manage permissions" + ", "
+                if mem.guild_permissions.manage_emojis:
+                    special_perms += "Manage emojis" + ", "
+            
+            embed.add_field(
+                name = "Special permissions",
+                value = special_perms[None:-2] if len(special_perms) > 0 else "None"
+            )
+
             if (mem.activity is not None):
                 embed.add_field(
                     name = "Currently " + \
@@ -133,7 +168,7 @@ class MemberManagement(commands.Cog):
                     else "playing" if mem.activity.type == discord.ActivityType.playing \
                     else "streaming" if mem.activity.type == discord.ActivityType.streaming \
                     else "doing something with") + " " + mem.activity.name,
-                    value = mem.activity.details if "details" in dir(mem.activity) else "",
+                    value = mem.activity.details if "details" in dir(mem.activity) else "No details",
                     inline = False
                 )
             await ctx.send(embed=embed)

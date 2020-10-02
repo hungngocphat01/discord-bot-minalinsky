@@ -1,11 +1,19 @@
 # Older
-Don't remember anything.
+- Didn't remember anything.
+- Initial build: v1.0 (31/03/2020)
 
-# Ver 3.5
-- Starts to record changelog.
-- Migrates responses to a discrete json file.
+# Ver 3.5 (???)
+- Start to record changelog.
+- Migrate responses to a discrete json file.
 - Improvement in %whois: role color.
 
-# Ver 3.6
+# Ver 3.6 (01/10/2020)
 - Improvement in %whois: special permissions.
 - Fix "no details" bug with %whois.
+
+# Ver 3.7 (02/10/2020)
+- Changelog now accessible by using commands.
+- Fix HTTPException 400 in GelbooruSend when the tag is invalid.
+- Add new LL seiyuu's birthday: Yano Hinaki (Yuu).
+- 3 or 4 days left until next birthday event: send a notification message to politburo (#bộ-chính-trị) channel.
+- Add new environment varible: SEND_NEXT_EV.

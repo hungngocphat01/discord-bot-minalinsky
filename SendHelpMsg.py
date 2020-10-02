@@ -14,7 +14,7 @@ class SendHelpMsg(commands.Cog):
         self.bot = bot
         print("Module loaded: SendHelpMsg")
 
-        # Help command
+    # Help command
     @commands.command(pass_context = True, aliases = ['event, ev'])
     async def help(self, ctx, cmd = None):
         print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
@@ -30,7 +30,7 @@ class SendHelpMsg(commands.Cog):
 - `jptime`: returns the current time in Japan. \n\
 - `time_at Etc/<timezone>`: returns the current time in the given timezone. \n\
 Example: `%time_at Etc/GMT+9`. \n\n\
-- `art`: send a number of images from Gelbooru (a Danbooru alternative).  \n\
+- `art`: send a number of images from Gelbooru.  \n\
 - `hentai`: send a number of images from Gelbooru, but guaranteed to be nsfw. \n\
 - `events`: returns a list of events in a given month.  \n\n\
 **Special commands** \n\
@@ -41,7 +41,8 @@ Example: `%time_at Etc/GMT+9`. \n\n\
 - `setrole <verb> <target_member> <role_name>`: give/delete a specific role to/from a specific member \n\
 - `allroles <target_member> <command>`: give/delete all ``oshi`` roles to/from a specific member. \n\
 - `premium <target_member> <command>`: give/delete premium membership to/from a specific member. \n\
-- `query <expression>`: runs a query in the `eventsdb` table. The query string has to be in SQLite syntax. \n\n\
+- `query <expression>`: runs a query in the `eventsdb` table. The query string has to be in SQLite syntax. \n\
+- `changelog`: as the name suggests. \n\n\
 To show a command's help message, run `{COMMAND_PREFIX}help <command_name>`."
         else:
             embed.title = f"**Help for ``{cmd}`` command**"
@@ -51,7 +52,7 @@ To show a command's help message, run `{COMMAND_PREFIX}help <command_name>`."
             if cmd == "help": 
                 embedDesc = "What's the point of calling help on a help command?."
             elif cmd in no_arg_cmd:
-                embedDesc = "This command has no argument"
+                embedDesc = "This command has no argument."
             elif cmd == "time_at":
                 embedDesc = "1 argument: the location at where time needs to be queried. Could be: \n\
 - A location: ``Asia/Ho_Chi_Minh``, ``Asia/Tokyo``, ``Asia/Shanghai`` \n\
@@ -75,10 +76,20 @@ To show a command's help message, run `{COMMAND_PREFIX}help <command_name>`."
 - A ``discord.Mention`` to the target member \n\
 - A string denoting the role's name (must be enclosed with quotes if white space char is present)."
             else:
-                embedDesc = "Unknown command or this command does not have a help message."
+                embedDesc = "Unknown command or this command does not include a help seperate message."
 
         embed.description = embedDesc
         embed.color = discord.Colour.orange()
 
         await ctx.send(embed = embed)
+    # Help command
+    @commands.command()
+    async def changelog(self, ctx, cmd = None):
+        changelogLines = open("changelog.txt").readlines()
+
+        changelogContent = str()
+        for line in changelogLines:
+            changelogContent += line
+        
+        await ctx.send(f"```{changelogContent}```")
     

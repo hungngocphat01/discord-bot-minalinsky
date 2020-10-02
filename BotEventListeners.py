@@ -10,6 +10,7 @@ from discord.ext import commands
 import traceback
 import re
 import random
+import os
 from datetime import datetime
 from BasicDefinitions import pquery
 
@@ -26,62 +27,71 @@ class BotEventListeners(commands.Cog):
 
         # Query the next event
         for guild in self.bot.guilds:
+            if int(os.getenv("DONT_SEND_NEXT_EV")):
+                break
             if (guild.id == 694173494052651020):
-                for channel in guild.channels:
-                    if (channel.id == 694843380844331038):
-                        currentDate = datetime.now().strftime("2010-%m-%d")
-                        events = pquery(f"select * from eventsdb where type = 'BD' and date = (select date from eventsdb where date > '{currentDate}' limit 1)").values.tolist()
-                        print("\nNext event(s) on startup:")
-                        print(events)
-                        eventNo = 1
+                POLITBURO_CH = 694199808432537672
+                NOTIF_CH = 694843380844331038
+                
+                channel = None
 
-                        if (len(events) == 0):
-                            break
-                        if (len(events) > 1):
-                            await channel.send("Next events:")
+                currentDate = datetime.now().strftime("2010-%m-%d")
+                events = pquery(f"select * from eventsdb where type = 'BD' and date = (select date from eventsdb where date > '{currentDate}' limit 1)").values.tolist()
+                print("\nNext event(s) on startup:")
+                print(events)
+                eventNo = 1
 
-                        event_date_lst = str(events[0][0]).split()[0].split("-")
-                        event_date = datetime(int(event_date_lst[0]), int(event_date_lst[1]), int(event_date_lst[2]))
-                        curr_date = datetime(int(event_date_lst[0]), int(datetime.now().month), int(datetime.now().day))
-                        delta = (event_date - curr_date).days
+                if (len(events) == 0):
+                    break
+                if (len(events) > 1):
+                    await channel.send("Next events:")
 
-                        print("Date delta: ", delta)
+                event_date_lst = str(events[0][0]).split()[0].split("-")
+                event_date = datetime(int(event_date_lst[0]), int(event_date_lst[1]), int(event_date_lst[2]))
+                curr_date = datetime(int(event_date_lst[0]), int(datetime.now().month), int(datetime.now().day))
+                delta = (event_date - curr_date).days
 
-                        if (delta != 2):
-                            break
+                print("Date delta: ", delta)
 
-                        for event in events:
-                            embed = discord.Embed()
-                            if (len(events) > 1):
-                                embed.title = f"Event {eventNo}"
-                                eventNo += 1
-                            else:
-                                embed.title = f"Next event"
+                if (delta == 2):
+                    channel = guild.get_channel(NOTIF_CH)
+                elif (delta <= 4):
+                    channel = guild.get_channel(POLITBURO_CH)
+                else:
+                    break
 
-                            embed.add_field(name = "Date",
-                                value = str(event[0].split("-")[2].split(" ")[0]) + "/" + str(event[0].split("-")[1]),
-                                inline = False
-                            )
-                            embed.add_field(
-                                name = "Type",
-                                value = "Birthday",
-                                inline = False
-                            )
-                            embed.add_field(
-                                name = "Details",
-                                value = event[2], 
-                                inline = True
-                            )
-                            embed.add_field(
-                                name = "Note",
-                                value = event[4],
-                                inline = True
-                            )
+                for event in events:
+                    embed = discord.Embed()
+                    if (len(events) > 1):
+                        embed.title = f"Event {eventNo}"
+                        eventNo += 1
+                    else:
+                        embed.title = f"Next event"
 
-                            embed.color = discord.Colour.orange()
-                            await channel.send(embed = embed)
-                            print("Event sent.\n")
-                        break
+                    embed.add_field(name = "Date",
+                        value = str(event[0].split("-")[2].split(" ")[0]) + "/" + str(event[0].split("-")[1]),
+                        inline = False
+                    )
+                    embed.add_field(
+                        name = "Type",
+                        value = "Birthday",
+                        inline = False
+                    )
+                    embed.add_field(
+                        name = "Details",
+                        value = event[2], 
+                        inline = True
+                    )
+                    embed.add_field(
+                        name = "Note",
+                        value = event[4],
+                        inline = True
+                    )
+
+                    embed.color = discord.Colour.orange()
+                    await channel.send(embed = embed)
+                    print("Event sent.\n")
+                break
             break
 
 
@@ -99,14 +109,11 @@ class BotEventListeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        try:
-            if "say" not in message.content:
-                for regex in self.responses_json:
-                    if (re.search(regex, message.content.lower())):
-                        randomRespond = random.choice(self.responses_json[regex])
-                        await message.channel.send(randomRespond)
-                        print(f"\nMessage triggered: \"{message.content}\", Channel: #{message.channel.name}")
-                        print(f"Response: {randomRespond}")
-                        break
-        except Exception as e:
-            await message.channel.send(f"```Error: {e}```Honoka-chaaaaaan. Mite mite~")
+        if "say" not in message.content:
+            for regex in self.responses_json:
+                if (re.search(regex, message.content.lower())):
+                    randomRespond = random.choice(self.responses_json[regex])
+                    await message.channel.send(randomRespond)
+                    print(f"\nMessage triggered: \"{message.content}\", Channel: #{message.channel.name}")
+                    print(f"Response: {randomRespond}")
+                    break

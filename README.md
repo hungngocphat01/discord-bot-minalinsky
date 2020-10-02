@@ -28,6 +28,10 @@ Using Python and Discord.Cog.
 - Purge messages.
 - Etc.
 
+## Changelog
+- Please refer ``changelog.txt``.
+
 ## Environment variables
 - ``RUNNING_ON_HEROKU`` (``0`` or ``1``): checks whether the bot is running on Heroku. This has to be set in your Heroku app settings. It will affect the bot's command prefix (e.g. one to trigger the Heroku instance and one to trigger the local instance).
 - ``BOT_TOKEN``: bot token.
+- DONT_SEND_NEXT_EV: do not notify the next event at startup (to avoid spamming in notification channels while testing).

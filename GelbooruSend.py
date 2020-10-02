@@ -25,7 +25,12 @@ class GelbooruSend(commands.Cog):
                     result = await client.random_post(tags = tagsLst)
                     embed = discord.Embed()
                     embed.set_image(url = str(result))
-                    await ctx.send(embed = embed)
+                    try:
+                        await ctx.send(embed = embed)
+                    except Exception:
+                        # Send error message
+                        await ctx.send("```Error: no image found or tags were not correctly specified. Please notice that the character names are written in East Asian order. For example: kousaka_honoka, not honoka_kosaka.```")
+                        break
         else:
             # Send help
             helpStr = f"""```
@@ -68,7 +73,12 @@ Examples:
                     result = await client.random_post(tags = tagsLst)
                     embed = discord.Embed()
                     embed.set_image(url = str(result))
-                    await ctx.send(embed = embed)
+                    try:
+                        await ctx.send(embed = embed)
+                    except Exception:
+                        # Send error message
+                        await ctx.send("```Error: no image found or tags were not correctly specified.\nPlease notice that the character names are written in East Asian order. For example: kousaka_honoka, not honoka_kosaka.\nAlso make sure the franchise's name is correctly written. For example: love_live!, not love_live.```")
+                        break
         else:
             # Send help
             helpStr = f"""```

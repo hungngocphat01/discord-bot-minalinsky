@@ -78,9 +78,17 @@ class MemberManagement(commands.Cog):
                 
         
     @commands.command()
-    async def whois(self, ctx):
+    async def whois(self, ctx, arg = None):
         print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
-        mem = ctx.message.mentions[0]
+
+        mentions = ctx.message.mentions
+        if len(mentions) > 0:
+            mem = mentions[0]
+        elif arg == "me":
+            mem = ctx.message.author
+        else:
+            await ctx.send("```No such member.```")
+            return
 
         if (mem is not None):
             embed = discord.Embed(color=mem.color)
@@ -109,7 +117,7 @@ class MemberManagement(commands.Cog):
             )
             embed.add_field(
                 name = "Status",
-                value = "Offine" if mem.status == discord.Status.offline else "Online",
+                value = "Offine" if mem.status is discord.Status.offline else "Online",
                 inline = True
             )
 

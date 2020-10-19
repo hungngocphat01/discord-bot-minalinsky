@@ -19,8 +19,8 @@ import pandasql
 from tabulate import tabulate
 
 # Bot info
-ver = "3.7"
-date = "03/10/2020"
+ver = "3.7.1"
+date = "20/10/2020"
 runningOnHeroku = (os.getenv("RUNNING_ON_HEROKU") == "1")
 print("Bot started.")
 

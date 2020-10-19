@@ -17,3 +17,6 @@
 - Add new LL seiyuu's birthday: Yano Hinaki (Yuu).
 - 3 or 4 days left until next birthday event: send a notification message to politburo (#bộ-chính-trị) channel.
 - Add new environment varible: SEND_NEXT_EV.
+
+# Ver 3.7.1 (20/10/2020)
+- Add "me" optional argument to whois command.

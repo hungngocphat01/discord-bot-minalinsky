@@ -20,3 +20,6 @@
 
 # Ver 3.7.1 (20/10/2020)
 - Add "me" optional argument to whois command.
+
+# Ver 3.7.2 (23/11/2020)
+- Add new command: khabanh

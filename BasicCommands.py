@@ -145,7 +145,7 @@ Database connected: {eventsdb is not None}```"""
 
     @commands.command()
     async def gem(self, ctx, arg):
-        print(f"\n'{ctx.message.content}' command ca    lled by {ctx.message.author}")
+        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
         rates = [[86, 48.13], [50, 28.66], [26, 16.11], [12, 8.05], [5, 3.46], [1, 1.12]]
         n_price = 0
         n_quantity = int(arg)
@@ -158,4 +158,23 @@ Database connected: {eventsdb is not None}```"""
                     n_quantity -= rate[QUANTITY]
                     break
         await ctx.send(f"```{arg} gems equals to approx. {round(n_price, 2)} USD or {int(n_price * 23400)} VND```")
+    
+    @commands.command()
+    async def khabanh(self, ctx, *, arg):
+        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        if len(arg) != 0:
+            words = arg.split()
+            result = []
+            for i in range(0, len(words)):
+                newword = ""
+                for j in range(0, len(words[i])):
+                    newword += words[i][j].lower() if j % 2 == 0 else words[i][j].upper()
+                result.append(newword)
+            embed = discord.Embed()
+            embed.set_author(name = ctx.message.author.display_name, icon_url = ctx.message.author.avatar_url)
+            embed.description = " ".join(result)
+
+            await ctx.message.delete()
+            await ctx.send(embed = embed)
+
 

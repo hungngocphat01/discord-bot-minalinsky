@@ -177,4 +177,23 @@ Database connected: {eventsdb is not None}```"""
             await ctx.message.delete()
             await ctx.send(embed = embed)
 
+    @commands.command()
+    async def gstat(self, ctx):
+        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        embed = discord.Embed()
 
+        embed.set_author(name = ctx.guild.name, icon_url = ctx.guild.icon_url)
+        members = ctx.guild.members
+        contributed_members = " ".join([x.mention for x in ctx.guild.premium_subscribers if x is not None])
+
+        embed.add_field(name = "Channels", value = len(ctx.guild.channels), inline=True)
+        embed.add_field(name = "Members", value = len(members), inline=True)
+        embed.add_field(name = "Online members (non-bot)", value = len([x for x in members if (x.status is not discord.Status.offline) and (x.status is not discord.Status.invisible) and (not x.bot)]), inline=False)
+        embed.add_field(name = "Bots", value=len([x for x in members if x.bot]), inline=True)
+        embed.add_field(name = "Contributors", value = contributed_members, inline=False)
+        embed.add_field(name = "Boost Level", value = ctx.guild.premium_tier, inline=True)
+        embed.add_field(name = "Boost Number", value = ctx.guild.premium_subscription_count, inline=True)
+        embed.add_field(name = "Owner", value = ctx.guild.get_member(ctx.guild.owner_id).mention, inline=False)
+        embed.set_image(url = ctx.guild.icon_url)
+        
+        await ctx.send(embed = embed)

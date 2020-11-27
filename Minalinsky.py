@@ -17,7 +17,7 @@ from GelbooruSend import GelbooruSend
 from SendHelpMsg import SendHelpMsg
 from MemberManagement import MemberManagement
 
-bot = commands.Bot(command_prefix = COMMAND_PREFIX)
+bot = commands.Bot(command_prefix = COMMAND_PREFIX, intents=discord.Intents.all())
 # Remove the discord's default help command
 bot.remove_command("help")
 

@@ -30,6 +30,9 @@ class SendHelpMsg(commands.Cog):
 - `jptime`: returns the current time in Japan. \n\
 - `time_at Etc/<timezone>`: returns the current time in the given timezone. \n\
 Example: `%time_at Etc/GMT+9`. \n\n\
+- `whois <mention>`: information of the mentioned member. \n\
+- `status`: status of the bot \n\
+- `gstat`: status of the guild. \n\
 - `art`: send a number of images from Gelbooru.  \n\
 - `hentai`: send a number of images from Gelbooru, but guaranteed to be nsfw. \n\
 - `events`: returns a list of events in a given month.  \n\n\
@@ -75,6 +78,8 @@ To show a command's help message, run `{COMMAND_PREFIX}help <command_name>`."
 - Command keyword: ``give`` or ``delete``\n\
 - A ``discord.Mention`` to the target member \n\
 - A string denoting the role's name (must be enclosed with quotes if white space char is present)."
+            elif cmd == "khabanh":
+                embedDesc = "Sends a message in the kHa bAnH case."
             else:
                 embedDesc = "Unknown command or this command does not include a help seperate message."
 

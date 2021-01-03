@@ -6,15 +6,17 @@
 
 import discord
 from discord.ext import commands
+from Administration import *
+from Logging import *
 
 class MemberManagement(commands.Cog):
     def __init__(self, bot):
-        print("Module loaded: MemberManagement")
+        log("Module loaded: MemberManagement")
         self.bot = bot
     
     @commands.command()
     async def premium(self, ctx, mention, cmd = None):
-        admin_roles_id = [694197858127052810, 694410785048231968, 703534853001314344, 694844619698995280]
+        command_log(ctx)
         premium_id = 710490624666632202
         
         mem = ctx.message.mentions[0]
@@ -22,7 +24,7 @@ class MemberManagement(commands.Cog):
         if (str(ctx.guild.id) != "694173494052651020"):
             await ctx.send("```This is a Love Live µ'sic Forever VN exclusive feature.```")
             return
-        if (ctx.author.top_role.id not in admin_roles_id):
+        if (is_admin(ctx.author.top_role.id)):
             await ctx.send("```Only admins can issue this command.```")
             return
         if (cmd not in ["give", "delete"]):
@@ -44,7 +46,8 @@ class MemberManagement(commands.Cog):
 
 
     @commands.command()
-    async def allroles(self, ctx, mention, cmd = None):
+    async def allroles(self, ctx, cmd, mention):
+        command_log(ctx)
         constant_roles_id = [694197858127052810, 694410785048231968, 703534853001314344, 694844619698995280, 710490624666632202]
 
         mem = ctx.message.mentions[0]
@@ -79,7 +82,7 @@ class MemberManagement(commands.Cog):
         
     @commands.command()
     async def whois(self, ctx, arg = None):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
 
         mentions = ctx.message.mentions
         if len(mentions) > 0:
@@ -185,14 +188,13 @@ class MemberManagement(commands.Cog):
 
     @commands.command()
     async def setrole(self, ctx, cmd, mention, rolename):
-        admin_roles_id = [694197858127052810, 703534853001314344, 694844619698995280]
-        
+        command_log(ctx)
         mem = ctx.message.mentions[0]
         # LLMFVN exclusive feature
         if (str(ctx.guild.id) != "694173494052651020"):
             await ctx.send("```This is a Love Live µ'sic Forever VN exclusive feature.```")
             return
-        if (ctx.author.top_role.id not in admin_roles_id):
+        if (is_admin(ctx.author.top_role.id)):
             await ctx.send("```Only admins can issue this command.```")
             return
         if (cmd not in ["give", "delete"]):

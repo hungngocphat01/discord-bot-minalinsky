@@ -3,28 +3,29 @@ import discord
 from discord.ext import commands
 from datetime import datetime
 from BasicDefinitions import pquery, eventsdb, query, COMMAND_PREFIX
+from Logging import *
 
 class EventQuery(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        print("Module loaded: EventQuery")
+        log("Module loaded: EventQuery")
 
     # Query command
     @commands.command(aliases = ["query"])
     async def botquery(self, ctx, queryStr = None):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
         if queryStr != None:
             try:
                 queryResult = "```css\nQuery result: \n\n"
                 queryResult += query(queryStr) + "```"
-                print(queryResult)
+                log(queryResult)
                 await ctx.send(queryResult)
             except Exception as e:
                 eStr = f"Error: {e.__repr__()}"
-                print(eStr)
+                log(eStr)
                 await ctx.send(eStr)
         else:
-            print("No query string detected.")
+            log("No query string detected.")
             await ctx.send(f"""```python
     Query command usage:
     {COMMAND_PREFIX}query "<sql_query_string>" (with quote)
@@ -60,15 +61,15 @@ class EventQuery(commands.Cog):
                 await self.botquery(ctx, f"select strftime('%d', date) as day, type, details, fullnote from eventsdb where cast(strftime('%m', date) as integer) = {month}")
         except Exception as e:
             await ctx.send(f"``Error: {e}``")
-            print(f"\nError: {e}")
+            log(f"\nError: {e}")
 
     # Query the next event
     @commands.command()
     async def nextev(self, ctx):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
         currentDate = datetime.now().strftime("2010-%m-%d")
         events = pquery(f"select * from eventsdb where date = (select date from eventsdb where date > '{currentDate}' limit 1)").values.tolist()
-        print(events)
+        log(events)
         eventNo = 1
         eventTypes = {"BD": "Birthday", "AN": "Anime Episode with Insert Song", "RE": "Release", "SP": "Special", "PV": "PV"}
 

@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 import pygelbooru
 from BasicDefinitions import COMMAND_PREFIX
+from Logging import *
 
 # Init the Danbooru client
 client = pygelbooru.Gelbooru()
@@ -9,11 +10,11 @@ client = pygelbooru.Gelbooru()
 class GelbooruSend(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        print("Module loaded: GelbooruSend")
+        log("Module loaded: GelbooruSend")
     
     @commands.command()
     async def art(self, ctx, tags = None, num = 1):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
         if tags is not None:
             tagsLst = tags.split("|")
             tagsLst.append("rating:safe")
@@ -56,7 +57,7 @@ Examples:
 
     @commands.command()
     async def hentai(self, ctx, tags = None, num = 1):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
 
         if tags is not None:
             if not ctx.channel.nsfw:

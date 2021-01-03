@@ -5,19 +5,19 @@ import discord
 from discord.ext import commands
 # Main vars and funcs
 from BasicDefinitions import runningOnHeroku, ver, date, startTime, startTimeStr, getTime, eventsdb, COMMAND_PREFIX
-
+from Logging import *
 
 class SendHelpMsg(commands.Cog):
     COMMAND_PREFIX = "%"
 
     def __init__(self, bot):
         self.bot = bot
-        print("Module loaded: SendHelpMsg")
+        log("Module loaded: SendHelpMsg")
 
     # Help command
     @commands.command(pass_context = True, aliases = ['event, ev'])
     async def help(self, ctx, cmd = None):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
 
         embed = discord.Embed()
         if (cmd is None):
@@ -46,6 +46,7 @@ Example: `%time_at Etc/GMT+9`. \n\n\
 - `premium <target_member> <command>`: give/delete premium membership to/from a specific member. \n\
 - `query <expression>`: runs a query in the `eventsdb` table. The query string has to be in SQLite syntax. \n\
 - `changelog`: as the name suggests. \n\n\
+- `journalctl`: log command invoking log (errors excluded). \n\n\
 To show a command's help message, run `{COMMAND_PREFIX}help <command_name>`."
         else:
             embed.title = f"**Help for ``{cmd}`` command**"
@@ -90,6 +91,7 @@ To show a command's help message, run `{COMMAND_PREFIX}help <command_name>`."
     # Help command
     @commands.command()
     async def changelog(self, ctx, cmd = None):
+        command_log(ctx)
         changelogLines = open("changelog.txt").readlines()
 
         changelogContent = str()

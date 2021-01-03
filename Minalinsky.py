@@ -16,6 +16,7 @@ from EventQuery import EventQuery
 from GelbooruSend import GelbooruSend
 from SendHelpMsg import SendHelpMsg
 from MemberManagement import MemberManagement
+from Logging import *
 
 bot = commands.Bot(command_prefix = COMMAND_PREFIX, intents=discord.Intents.all())
 # Remove the discord's default help command
@@ -34,4 +35,4 @@ bot.add_cog(GelbooruSend(bot))
 try:
     bot.run(TOKEN)
 except Exception as e:
-    print(f"Bot stopped working due to error: \n{e}")
+    log(f"Bot stopped working due to error: \n{e}")

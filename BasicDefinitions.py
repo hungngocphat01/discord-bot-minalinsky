@@ -17,21 +17,22 @@ import os
 import pandas as pd
 import pandasql
 from tabulate import tabulate
+from Logging import *
 
 # Bot info
-ver = "3.7.3"
-date = "27/11/2020"
+ver = "3.8"
+date = "04/01/2021"
 runningOnHeroku = (os.getenv("RUNNING_ON_HEROKU") == "1")
-print("Bot started.")
+log("Bot started.")
 
 #############  Read the database #############
 # Import database
 eventsdb = None
 
 try:
-    eventsdb = pd.read_excel("events.xlsx")
+    eventsdb = pd.read_excel("events.xls")
 except FileNotFoundError:
-    print("Database file not found. Please check again.")
+    log("Database file not found. Please check again.")
 
 # Init pandasql
 pquery = lambda queryStr: pandasql.sqldf(queryStr, globals())

@@ -61,7 +61,7 @@ class BasicCommands(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def shutdown(self, ctx):
-        log(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)  
         elapsedSecs = datetime.now() - startTime
         await ctx.send(f"""```Shutdown signal received. Shutting down. \nHad been running for {elapsedSecs}```""")
         await ctx.bot.logout()
@@ -105,7 +105,7 @@ class BasicCommands(commands.Cog):
     # Status command
     @commands.command(pass_context = True)
     async def status(self, ctx):
-        log(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)  
         statusString = f"""```markdown
 Minalinsky v{ver}
 Updated: {date}
@@ -139,7 +139,7 @@ Database connected: {eventsdb is not None}```"""
     # Time as any timezone command
     @commands.command()
     async def time_at(self, ctx, arg = "UTC"):
-        log(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)  
         if arg == "list":
             for i in pytz.common_timezones:
                 await ctx.send(f"```{i}```")

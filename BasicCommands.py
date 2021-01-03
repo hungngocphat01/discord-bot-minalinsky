@@ -10,6 +10,7 @@
 #   gem
 
 # Discord modules
+from Administration import is_admin
 import discord
 from discord.ext import commands
 # Support modules
@@ -19,17 +20,19 @@ import platform
 import pytz
 # Main vars and funcs
 from BasicDefinitions import runningOnHeroku, ver, date, startTime, startTimeStr, getTime, eventsdb, COMMAND_PREFIX
+from Logging import *
 
 class BasicCommands(commands.Cog):
     COMMAND_PREFIX = "%"
 
     def __init__(self, bot):
         self.bot = bot
-        print("Module loaded: BasicCommands")
+        log("Module loaded: BasicCommands")
     
     # Purge messages command
     @commands.command(pass_context = True)
     async def purge(self, ctx, amount = 0):
+        command_log(ctx)
         if (re.search("Owner|Admin|Tech", str(ctx.author.roles))):
             if amount > 0:
                 await ctx.channel.purge(limit = amount + 1)
@@ -38,14 +41,14 @@ class BasicCommands(commands.Cog):
                 await ctx.send("J xoá 0 tin nhắn là xoá thế nào.")
             else:
                 await ctx.send("J số đếm mà âm được à. Về học lại lớp 1 đi.")
-            print(f"Purged {amount} message(s) from {ctx.message.channel}, called by {ctx.message.author}")
+            log(f"Purged {amount} message(s) from {ctx.message.channel}, called by {ctx.message.author}")
         else:
             await ctx.send("J chỉ có admin mới được dùng lệnh này thôi.")
 
     # Evaluate command
     @commands.command(pass_context = True, aliases = ["eval"])
     async def evaluate(self, ctx, *, arg):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
         if (not re.search("import|open|def|sys|os", arg)) or ("owner" in ctx.message.author.lower()):
             try:
                 await ctx.send(f"```{eval(arg)}```")
@@ -58,14 +61,15 @@ class BasicCommands(commands.Cog):
     @commands.command()
     @commands.is_owner()
     async def shutdown(self, ctx):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        log(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
         elapsedSecs = datetime.now() - startTime
         await ctx.send(f"""```Shutdown signal received. Shutting down. \nHad been running for {elapsedSecs}```""")
         await ctx.bot.logout()
 
+    # Server stats
     @commands.command()
     async def stats(self, ctx):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
         if (ctx.guild is not None):
             guild = ctx.guild
             bot_num, online_num = 0, 0
@@ -89,7 +93,7 @@ class BasicCommands(commands.Cog):
     # Restart command
     @commands.command()
     async def restart(self, ctx):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
         if runningOnHeroku:
             elapsedSecs = datetime.now() - startTime
             await ctx.send(f"""```Restarting...\nHad been running for {elapsedSecs}```""")
@@ -101,7 +105,7 @@ class BasicCommands(commands.Cog):
     # Status command
     @commands.command(pass_context = True)
     async def status(self, ctx):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        log(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
         statusString = f"""```markdown
 Minalinsky v{ver}
 Updated: {date}
@@ -116,26 +120,26 @@ Database connected: {eventsdb is not None}```"""
     # Say command
     @commands.command(pass_context = True, aliases = ["s"])
     async def say(self, ctx, *, arg):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
         await ctx.message.delete()
         await ctx.send(arg)
 
     # VN Time command
     @commands.command(pass_context = True)
     async def time(self, ctx):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
         await ctx.send(f"```python\n🇻🇳 Ima wa {getTime('Asia/Ho_Chi_Minh')} desu.```")
 
     # JP Time command
     @commands.command()
     async def jptime(self, ctx):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
         await ctx.send(f"```python\n🇯🇵 Ima wa {getTime('Asia/Tokyo')} desu.```")
 
     # Time as any timezone command
     @commands.command()
     async def time_at(self, ctx, arg = "UTC"):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        log(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
         if arg == "list":
             for i in pytz.common_timezones:
                 await ctx.send(f"```{i}```")
@@ -143,9 +147,10 @@ Database connected: {eventsdb is not None}```"""
         else: 
             await ctx.send(f"```python\nIma, {arg} de wa {getTime(arg)} desu.```")
 
+    # Convert gem into $$$
     @commands.command()
     async def gem(self, ctx, arg):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
         rates = [[86, 48.13], [50, 28.66], [26, 16.11], [12, 8.05], [5, 3.46], [1, 1.12]]
         n_price = 0
         n_quantity = int(arg)
@@ -161,7 +166,7 @@ Database connected: {eventsdb is not None}```"""
     
     @commands.command()
     async def khabanh(self, ctx, *, arg):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
         if len(arg) != 0:
             words = arg.split()
             result = []
@@ -179,7 +184,7 @@ Database connected: {eventsdb is not None}```"""
 
     @commands.command()
     async def gstat(self, ctx):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
         embed = discord.Embed()
 
         embed.set_author(name = ctx.guild.name, icon_url = ctx.guild.icon_url)
@@ -197,3 +202,35 @@ Database connected: {eventsdb is not None}```"""
         embed.set_image(url = ctx.guild.icon_url)
         
         await ctx.send(embed = embed)
+
+    @commands.command()
+    async def journalctl(self, ctx, num=None):
+        command_log(ctx)  
+        arid = ctx.message.author.top_role.id
+
+        if (not is_admin(arid)):
+            e = f"{ctx.message.author} does not have sufficient permission to invoke this command."
+            log(e)
+            await ctx.send(f"```{e}```")
+            return
+
+        if num is not None:
+            num = int(num)
+            if (num == 0):
+                log("Number of messages must be non-zero.")
+                return
+            elif (num < 0):
+                logmsg = "\n".join(runtime_logs[None:(-1)*num])
+            elif (num > 0):
+                begin_index = len(runtime_logs) - num
+                if (begin_index < 0):
+                    begin_index = 0
+                logmsg = "\n".join(runtime_logs[begin_index:None])
+        else:
+            logmsg = "\n".join(runtime_logs)
+
+        if (len(logmsg) > 2000):
+            logmsg = log[len(logmsg)-1980:None]
+            logmsg = "(Truncated)...\n" + log
+
+        await ctx.send(f"```{logmsg}```")

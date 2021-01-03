@@ -8,7 +8,7 @@ def log(*args):
     for i in range(0, len(objs)):
         if isinstance(objs[i], str):
             objs[i] = str(objs[i]).replace("```", "@@@")
-    msg = " ".join(objs)
+    msg = " ".join(str(objs))
     print(msg)
     runtime_logs.append(msg)
 

@@ -27,3 +27,8 @@
 # Ver 3.7.3 (27/11/2020)
 - Add Intents
 - Add new command: gstat
+
+# Ver 3.8 (04/01/2021)
+- Change logging method
+- Add journalctl command
+- Add Liella seiyuu birthday

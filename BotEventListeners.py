@@ -13,17 +13,18 @@ import random
 import os
 from datetime import datetime
 from BasicDefinitions import pquery
+from Logging import *
 
 class BotEventListeners(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.responses_json = json.load(open("responses.json"))
-        print("Module loaded: BotEventListeners")
+        log("Module loaded: BotEventListeners")
         
     ############# Bot events ############# 
     @commands.Cog.listener()
     async def on_ready(self):
-        print("Bot ready.")
+        log("Bot ready.")
 
         # Query the next event
         for guild in self.bot.guilds:
@@ -37,8 +38,8 @@ class BotEventListeners(commands.Cog):
 
                 currentDate = datetime.now().strftime("2010-%m-%d")
                 events = pquery(f"select * from eventsdb where type = 'BD' and date = (select date from eventsdb where date > '{currentDate}' limit 1)").values.tolist()
-                print("\nNext event(s) on startup:")
-                print(events)
+                log("\nNext event(s) on startup:")
+                log(events)
                 eventNo = 1
 
                 if (len(events) == 0):
@@ -51,7 +52,7 @@ class BotEventListeners(commands.Cog):
                 curr_date = datetime(int(event_date_lst[0]), int(datetime.now().month), int(datetime.now().day))
                 delta = (event_date - curr_date).days
 
-                print("Date delta: ", delta)
+                log("Date delta: ", delta)
 
                 if (delta == 2):
                     channel = guild.get_channel(NOTIF_CH)
@@ -90,7 +91,7 @@ class BotEventListeners(commands.Cog):
 
                     embed.color = discord.Colour.orange()
                     await channel.send(embed = embed)
-                    print("Event sent.\n")
+                    log("Event sent.\n")
                 break
             break
 
@@ -98,13 +99,13 @@ class BotEventListeners(commands.Cog):
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, discord.ext.commands.errors.CommandNotFound):
-            print(f"\nImproper '{ctx.message.content}' command called by {ctx.message.author}")
+            log(f"\nImproper '{ctx.message.content}' command called by {ctx.message.author}")
             await ctx.send(f"```Command not found: {ctx.message.content.split()[0]} ```")
         else:
             errorMsg = f"```Error: {error}\n"
             errorMsg += traceback.format_exc().replace('```', r'\```')
             errorMsg += "```"
-            print(errorMsg)
+            log(errorMsg)
             await ctx.send(errorMsg)
 
     @commands.Cog.listener()
@@ -114,6 +115,6 @@ class BotEventListeners(commands.Cog):
                 if (re.search(regex, message.content.lower())):
                     randomRespond = random.choice(self.responses_json[regex])
                     await message.channel.send(randomRespond)
-                    print(f"\nMessage triggered: \"{message.content}\", Channel: #{message.channel.name}")
-                    print(f"Response: {randomRespond}")
+                    log(f"\nMessage triggered: \"{message.content}\", Channel: #{message.channel.name}")
+                    log(f"Response: {randomRespond}")
                     break

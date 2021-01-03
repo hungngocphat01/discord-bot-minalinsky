@@ -3,16 +3,17 @@ from discord.ext import commands
 import copy
 import re
 from BasicDefinitions import emojson, similarityBetween, COMMAND_PREFIX
+from Logging import *
 
 class Emoji(commands.Cog):
     def __init__(self, bot):
-        print("Module loaded: Emoji")
+        log("Module loaded: Emoji")
         self.bot = bot
 
     # Send emoji
     @commands.command(aliases = ["emo"])
     async def emoji(self, ctx, emoname = None):
-        print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+        command_log(ctx)
         if emoname == None:
             helpStr = f"""```Usage:
 {COMMAND_PREFIX}emoji list: list all emoji names (text only).
@@ -27,7 +28,7 @@ class Emoji(commands.Cog):
             emojilistStr += "```"
             await ctx.send(emojilistStr)
         else:
-            print(f"\n'{ctx.message.content}' command called by {ctx.message.author}")
+            command_log(ctx)  
             try:
                 embed = discord.Embed()
                 embed.set_author(name = ctx.message.author.display_name, icon_url = ctx.message.author.avatar_url)
@@ -61,11 +62,11 @@ class Emoji(commands.Cog):
                         suggestionString += " or "
                 suggestionString += "?```"
                 # Send it
-                print(suggestionString)
+                log(suggestionString)
                 await ctx.send(suggestionString)
             except Exception as e:
                 eStr = f"```Error: {e.__repr__()}```"
-                print(eStr)
+                log(eStr)
                 await ctx.send(eStr)
 
     # Send preview of emojis

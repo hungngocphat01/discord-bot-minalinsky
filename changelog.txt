@@ -32,3 +32,6 @@
 - Change logging method
 - Add journalctl command
 - Add Liella seiyuu birthday
+
+# Ver 3.8.1 (04/01/2021)
+- Add color and timecode to journalctl

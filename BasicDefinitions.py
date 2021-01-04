@@ -23,7 +23,12 @@ from Logging import *
 ver = "3.8"
 date = "04/01/2021"
 runningOnHeroku = (os.getenv("RUNNING_ON_HEROKU") == "1")
-log("Bot started.")
+
+log(f"Minalinsky Discord Bot v{ver}")
+log(f"Last updated {date}")
+log(f"Scripted in Python 3.")
+log(f"(c) 2020-2021 Hung Ngoc Phat")
+log("================================")
 
 #############  Read the database #############
 # Import database

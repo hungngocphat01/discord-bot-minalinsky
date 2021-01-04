@@ -1,14 +1,13 @@
 from os import replace
-
-
 runtime_logs = []
 
 def log(*args):
     objs = list(args)
     for i in range(0, len(objs)):
         if isinstance(objs[i], str):
-            objs[i] = str(objs[i]).replace("```", "@@@")
-    msg = " ".join(str(objs))
+            objs[i] = str(objs[i]).replace("`", "@")
+    objs = [str(x) for x in objs]
+    msg = " ".join(objs)
     print(msg)
     runtime_logs.append(msg)
 

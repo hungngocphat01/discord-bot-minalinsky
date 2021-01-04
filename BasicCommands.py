@@ -233,4 +233,4 @@ Database connected: {eventsdb is not None}```"""
             logmsg = log[len(logmsg)-1980:None]
             logmsg = "(Truncated)...\n" + log
 
-        await ctx.send(f"```{logmsg}```")
+        await ctx.send(f"```css\n{logmsg}```")

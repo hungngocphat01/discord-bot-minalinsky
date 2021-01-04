@@ -108,6 +108,7 @@ class BasicCommands(commands.Cog):
         command_log(ctx)  
         statusString = f"""```markdown
 Minalinsky v{ver}
+By ngocphat01
 Updated: {date}
 
 Running on: {platform.system()} {platform.release()}

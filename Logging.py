@@ -1,4 +1,5 @@
 from os import replace
+from datetime import datetime
 runtime_logs = []
 
 def log(*args):
@@ -8,6 +9,10 @@ def log(*args):
             objs[i] = str(objs[i]).replace("`", "@")
     objs = [str(x) for x in objs]
     msg = " ".join(objs)
+
+    now = datetime.now().strftime("[%d-%m %H:%M] ")
+    msg = now + msg
+
     print(msg)
     runtime_logs.append(msg)
 

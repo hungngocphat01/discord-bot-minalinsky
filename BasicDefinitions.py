@@ -20,7 +20,7 @@ from tabulate import tabulate
 from Logging import *
 
 # Bot info
-ver = "3.8.2"
+ver = "3.9"
 date = "18/01/2021"
 runningOnHeroku = (os.getenv("RUNNING_ON_HEROKU") == "1")
 

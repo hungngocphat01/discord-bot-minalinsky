@@ -66,30 +66,6 @@ class BasicCommands(commands.Cog):
         await ctx.send(f"""```Shutdown signal received. Shutting down. \nHad been running for {elapsedSecs}```""")
         await ctx.bot.logout()
 
-    # Server stats
-    @commands.command()
-    async def stats(self, ctx):
-        command_log(ctx)
-        if (ctx.guild is not None):
-            guild = ctx.guild
-            bot_num, online_num = 0, 0
-            for mem in guild.members:
-                if (mem.bot):
-                    bot_num += 1
-                elif (mem.status != discord.Status.offline):
-                    online_num += 1
-            
-            stats  = "```Guild information report\n\n"
-            stats += f"Guild name: {guild.name}\n"
-            stats += f"Region: {guild.region}\n"
-            stats += f"Text channels: {len(guild.text_channels)}\n"
-            stats += f"Members: {len(guild.members)}\n"
-            stats += f"Online: {online_num}, Bots: {bot_num}\n"
-            stats += f"Owner: {guild.owner.display_name}\n"
-            stats += f"Boosters: {[m.display_name for m in guild.premium_subscribers]}\n"
-            stats += "```"
-            await ctx.send(stats)
-
     # Restart command
     @commands.command()
     async def restart(self, ctx):
@@ -123,6 +99,9 @@ Database connected: {eventsdb is not None}```"""
     async def say(self, ctx, *, arg):
         command_log(ctx)
         await ctx.message.delete()
+        if (not is_admin(ctx.author.top_role.id)):
+            log("Tagging in say command for non-admins is prohibited.")
+            arg = arg.replace("@", "`@`")
         await ctx.send(arg)
 
     # VN Time command
@@ -184,7 +163,7 @@ Database connected: {eventsdb is not None}```"""
             await ctx.send(embed = embed)
 
     @commands.command()
-    async def gstat(self, ctx):
+    async def stats(self, ctx):
         command_log(ctx)
         embed = discord.Embed()
 

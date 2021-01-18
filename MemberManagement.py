@@ -13,73 +13,7 @@ class MemberManagement(commands.Cog):
     def __init__(self, bot):
         log("Module loaded: MemberManagement")
         self.bot = bot
-    
-    @commands.command()
-    async def premium(self, ctx, mention, cmd = None):
-        command_log(ctx)
-        premium_id = 710490624666632202
-        
-        mem = ctx.message.mentions[0]
-        # LLMFVN exclusive feature
-        if (str(ctx.guild.id) != "694173494052651020"):
-            await ctx.send("```This is a Love Live µ'sic Forever VN exclusive feature.```")
-            return
-        if (not is_admin(ctx.author.top_role.id)):
-            await ctx.send("```Only admins can issue this command.```")
-            return
-        if (cmd not in ["give", "delete"]):
-            await ctx.send("```Parameter is missing or wrongly specified.```")
-            return
-
-        if (cmd == "give"):
-            mem_roles = mem.roles
-            if premium_id not in [role.id for role in mem_roles]:
-                mem_roles.append(ctx.guild.get_role(premium_id))
-                await mem.edit(roles = mem_roles)
-                await ctx.send(f"```Premium membership given to {mem.display_name}```")
-        elif (cmd == "delete"):
-            mem_roles = mem.roles
-            if premium_id in [role.id for role in mem_roles]:
-                mem_roles.remove(ctx.guild.get_role(premium_id))
-                await mem.edit(roles = mem_roles)
-                await ctx.send(f"```{mem.display_name} has been deprived of his/her premium membership```")
-
-
-    @commands.command()
-    async def allroles(self, ctx, cmd, mention):
-        command_log(ctx)
-        constant_roles_id = [694197858127052810, 694410785048231968, 703534853001314344, 694844619698995280, 710490624666632202]
-
-        mem = ctx.message.mentions[0]
-        # LLMFVN exclusive feature
-        if (str(ctx.guild.id) != "694173494052651020"):
-            await ctx.send("```This is a Love Live µ'sic Forever VN exclusive feature.```")
-            return
-        if (ctx.author.top_role.id not in constant_roles_id):
-            await ctx.send("```Only admins can issue this command.```")
-            return
-        if (cmd not in ["give", "delete"]):
-            await ctx.send("```Parameter is missing or wrongly specified.```")
-            return
-        
-        if (cmd == "give"):
-            oshi_roles = ["Honoka", "Umi", "Kotori", "Hanayo", "Rin", "Maki", "Nico", "Eli", "Nozomi", "μ's", \
-            "Chika", "Riko", "You", "Ruby", "Yoshiko", "Yohane", "Hanamaru", "Kanan", "Mari", "Dia", "Aqours", \
-            "Leah", "Sarah", "Saint Snow", \
-            "Ayumu", "Setsuna", "Ai", "Rina", "Shizuku", "Kasumi", "Emma", "Kanata", "Karin", "Shioriko", "Nijigasaki"]
-
-            roles = [role for role in ctx.guild.roles if str(role) in [(x + "-oshi") for x in oshi_roles]]
-        elif (cmd == "delete"):
-            roles = []
-        
-        for role in mem.roles:
-            if (role.id in constant_roles_id):
-                roles.append(role)
-        
-        await mem.edit(roles = roles)
-        await ctx.send(f"```{len(roles)} role(s) written to {mem.display_name}```")
-                
-        
+                   
     @commands.command()
     async def whois(self, ctx, arg = None):
         command_log(ctx)

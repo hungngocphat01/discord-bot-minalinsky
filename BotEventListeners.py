@@ -109,7 +109,11 @@ class BotEventListeners(commands.Cog):
             await ctx.send(errorMsg)
 
     @commands.Cog.listener()
-    async def on_message(self, message):
+    async def on_message(self, message: discord.Message):
+        if "ponk" in message.content:
+            if random.choices([0, 1], [0.7, 0.3])[0]:
+                await message.add_reaction([e for e in message.guild.emojis if e.name == "ponk"][0])
+
         if "say" not in message.content:
             for regex in self.responses_json:
                 if (re.search(regex, message.content.lower())):

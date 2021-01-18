@@ -24,7 +24,7 @@ class MemberManagement(commands.Cog):
         if (str(ctx.guild.id) != "694173494052651020"):
             await ctx.send("```This is a Love Live µ'sic Forever VN exclusive feature.```")
             return
-        if (is_admin(ctx.author.top_role.id)):
+        if (not is_admin(ctx.author.top_role.id)):
             await ctx.send("```Only admins can issue this command.```")
             return
         if (cmd not in ["give", "delete"]):
@@ -187,14 +187,14 @@ class MemberManagement(commands.Cog):
             await ctx.send("```Error: Cannot get member from mention```")
 
     @commands.command()
-    async def setrole(self, ctx, cmd, mention, rolename):
+    async def role(self, ctx, cmd, mention, rolename):
         command_log(ctx)
         mem = ctx.message.mentions[0]
         # LLMFVN exclusive feature
         if (str(ctx.guild.id) != "694173494052651020"):
             await ctx.send("```This is a Love Live µ'sic Forever VN exclusive feature.```")
             return
-        if (is_admin(ctx.author.top_role.id)):
+        if (not is_admin(ctx.author.top_role.id)):
             await ctx.send("```Only admins can issue this command.```")
             return
         if (cmd not in ["give", "delete"]):
@@ -214,9 +214,9 @@ class MemberManagement(commands.Cog):
             if (role is None):
                 await ctx.send(f"```No such role: {rolename}.```")
                 return
-            elif (role.id ):
-                await ctx.send(f"```Permission denied: {rolename} must be given manually.```")
-                return
+            # elif (is_admin(role.id)):
+            #     await ctx.send(f"```Permission denied: {rolename} must be given manually.```")
+            #     return
             await mem.add_roles(role)
             await ctx.send(f"```Role \"{rolename}\" gave to {mem.display_name}```")
         elif (cmd == "delete"):

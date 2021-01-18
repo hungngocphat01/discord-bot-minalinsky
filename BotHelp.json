@@ -1,0 +1,138 @@
+{
+    "say":{
+       "desc":"Tells the bot to echo a message.",
+       "args":[
+          "<message>"
+       ],
+       "arg_desc":[
+          "The message for the bot to echo."
+       ]
+    },
+    "time":{
+       "desc":"Returns the current time in GMT+7 (VN).",
+       "args":0
+    },
+    "jptime":{
+       "desc":"Returns the current time in GMT+9 (Japan).",
+       "args":0
+    },
+    "whois":{
+       "desc":"Get a guild member's information.",
+       "args":[
+          "<mention>"
+       ],
+       "arg_desc":[
+          "Mention of the member whose information is to queried."
+       ]
+    },
+    "status":{
+       "desc":"Get the status of the bot.",
+       "args":0
+    },
+    "stats":{
+       "desc":"Get the status of the guild.",
+       "args":0
+    },
+    "art":{
+       "desc":"Retrieve some artworks from gelbooru (non-nsfw)",
+       "args":[
+          "<tags>",
+          "[quantity]"
+       ],
+       "arg_desc":[
+          "Tags to query.\nSpaces must be replaced by _.\nEach tag has to be seperated by |.\nPerson names must be in East Asian order.",
+          "(Optional) Number of images to get (max 5)."
+       ],
+       "examples":[
+          "%art kousaka_honoka",
+          "%art sonoda_umi 5",
+          "%art kousaka_honoka|yazawa_nico|ayase_eli",
+          "%art hoshii_miki|amami_haruka 4"
+       ]
+    },
+    "hentai":{
+       "desc":"Retrive some nsfw artworks from gelbooru. Only available in nsfw channels",
+       "args":[
+          "<tags>",
+          "[quantity]"
+       ],
+       "arg_desc":[
+          "Tags to query.\nSpaces must be replaced by _.\nEach tag has to be seperated by |.\nPerson names must be in East Asian order.",
+          "(Optional) Number of images to get (max 5)."
+       ],
+       "examples":[
+          "%hentai suzumiya_haruhi",
+          "%hentai bang_dream!|paizuri",
+          "%hentai nekopara|felatio|sex 3"
+       ]
+    },
+    "events":{
+       "desc":"Returns a list of events in a given month",
+       "args":[
+          "<month>"
+       ],
+       "arg_desc":[
+          "Month in which to query events"
+       ]
+    },
+    "nextev":{
+       "desc":"Returns the nearest upcoming LL event",
+       "args":0
+    },
+    "query":{
+       "desc":"Execute an SQL query. Run this command without any argument to learn more.\nThe underlying command of events and nextev",
+       "args":[
+          "[sql statement]"
+       ],
+       "arg_desc":[
+          "SQL statement to execute. Must be in SQLite syntax"
+       ]
+    },
+    "role":{
+       "desc":"(Admin) Give or delete a specific role from a member",
+       "args":[
+          "<verb>",
+          "<mention>",
+          "<role>"
+       ],
+       "arg_desc":[
+          "'give' or 'delete'.",
+          "Mention of the member to whom role is given/removed.",
+          "The string denoting the role (enclosed by quotes)."
+       ],
+       "examples":[
+          "%role give @SomeoneInTheServer \"iM@S-bu\""
+       ]
+    },
+    "purge":{
+       "desc":"(Admin) Delete large quantity of messages",
+       "args":[
+          "<quantity>"
+       ],
+       "arg_desc":[
+          "The number of messages to be deleted in the current channel (max 20 except Owner)"
+       ]
+    },
+    "changelog":{
+       "desc":"Get the bot's changelog",
+       "args":0
+    },
+    "journalctl":{
+       "desc":"Get the bot's log from the beginning of the current session.",
+       "args":[
+          "[quantity]"
+       ],
+       "arg_desc":[
+          "(Optional )Number of lines to get from the log. Positive = from bottom, negative = from top.\nThe log will be shrinked to 2000 chars if exceeded."
+       ]
+    },
+    "evaluate":{
+       "desc":"Evaluate a Python expression",
+       "args":[
+          "<expr>"
+       ],
+       "arg_desc":[
+          "The expression to be evaluated"
+       ]
+    }
+ }

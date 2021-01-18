@@ -20,8 +20,8 @@ from tabulate import tabulate
 from Logging import *
 
 # Bot info
-ver = "3.8.1"
-date = "04/01/2021"
+ver = "3.8.2"
+date = "18/01/2021"
 runningOnHeroku = (os.getenv("RUNNING_ON_HEROKU") == "1")
 
 log(f"Minalinsky Discord Bot v{ver}")

@@ -35,3 +35,8 @@
 
 # Ver 3.8.1 (04/01/2021)
 - Add color and timecode to journalctl
+
+# Ver 3.8.2 (18/01/2021)
+- Non-admins no longer be able to tag in say command.
+- Remove old stats command, rename gstat into stats
+- Fix setrole, rename setrole into role.

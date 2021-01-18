@@ -41,7 +41,7 @@ Example: `%time_at Etc/GMT+9`. \n\n\
 - `restart` (everyone): disconnects the database and restarts the bot. \n\
 - `purge <amount>` (admins only): deletes a given amount of messages in the current channel. \n\
 - `evaluate <expression>`: evaluates a given expression. \n\
-- `setrole <verb> <target_member> <role_name>`: give/delete a specific role to/from a specific member \n\
+- `role <verb> <target_member> <role_name>`: give/delete a specific role to/from a specific member \n\
 - `allroles <target_member> <command>`: give/delete all ``oshi`` roles to/from a specific member. \n\
 - `premium <target_member> <command>`: give/delete premium membership to/from a specific member. \n\
 - `query <expression>`: runs a query in the `eventsdb` table. The query string has to be in SQLite syntax. \n\
@@ -74,7 +74,7 @@ To show a command's help message, run `{COMMAND_PREFIX}help <command_name>`."
                 embedDesc = "[Admins only] 2 args:\n\
 - A ``discord.Mention`` to the target member \n\
 - Command keyword: ``give`` or ``delete``"
-            elif cmd == "setrole":
+            elif cmd == "role":
                 embedDesc = "[Admins only] 3 args:\n\
 - Command keyword: ``give`` or ``delete``\n\
 - A ``discord.Mention`` to the target member \n\

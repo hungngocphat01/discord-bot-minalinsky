@@ -18,7 +18,11 @@ from Logging import *
 class BotEventListeners(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.responses_json = json.load(open("responses.json"))
+        with open("configuration.json", mode="rt") as f:
+            conf = json.loads(f.read())
+            self.responses_json = conf["responses"]
+            self.emoji_replies = conf["emoji_replies"]
+
         log("Module loaded: BotEventListeners")
         
     ############# Bot events ############# 
@@ -110,11 +114,11 @@ class BotEventListeners(commands.Cog):
 
     @commands.Cog.listener()
     async def on_message(self, message: discord.Message):
-        if "ponk" in message.content:
-            if random.choices([0, 1], [0.7, 0.3])[0]:
-                await message.add_reaction([e for e in message.guild.emojis if e.name == "ponk"][0])
+        for e in self.emoji_replies:
+            if e in message.content and random.choices([0, 1], [0.7, 0.3])[0]:
+                await message.add_reaction([x for x in message.guild.emojis if x.name == e][0])
 
-        if "say" not in message.content:
+        if "say" not in message.content and not message.author.bot:
             for regex in self.responses_json:
                 if (re.search(regex, message.content.lower())):
                     randomRespond = random.choice(self.responses_json[regex])

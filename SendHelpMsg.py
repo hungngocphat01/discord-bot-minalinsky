@@ -19,7 +19,8 @@ class SendHelpMsg(commands.Cog):
     @commands.command(pass_context = True)
     async def help(self, ctx, cmd = None):
         command_log(ctx)
-        j = json.loads(open("BotHelp.json", mode="rt").read())
+        with open("BotHelp.json", mode="rt") as f:
+            j = json.loads(f.read())
         
         embed = discord.Embed()
         

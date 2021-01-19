@@ -2,13 +2,16 @@ import discord
 from discord.ext import commands
 import copy
 import re
-from BasicDefinitions import emojson, similarityBetween, COMMAND_PREFIX
+import json
+from BasicDefinitions import similarityBetween, COMMAND_PREFIX
 from Logging import *
 
 class Emoji(commands.Cog):
     def __init__(self, bot):
         log("Module loaded: Emoji")
         self.bot = bot
+        with open("configuration.json", mode="rt") as f:
+            self.emojson = json.loads(f.read())["custom_emojis"]
 
     # Send emoji
     @commands.command(aliases = ["emo"])
@@ -23,7 +26,7 @@ class Emoji(commands.Cog):
             await ctx.send(helpStr)
         elif emoname.lower() == "list":
             emojilistStr = f"```Emoji list:\n\n"
-            for key in emojson:
+            for key in self.emojson:
                 emojilistStr += str(key) + "\n"
             emojilistStr += "```"
             await ctx.send(emojilistStr)
@@ -32,13 +35,13 @@ class Emoji(commands.Cog):
             try:
                 embed = discord.Embed()
                 embed.set_author(name = ctx.message.author.display_name, icon_url = ctx.message.author.avatar_url)
-                embed.set_image(url = str(emojson[emoname]))
+                embed.set_image(url = str(self.emojson[emoname]))
                 await ctx.message.delete()
                 await ctx.send(embed = embed)        
             except KeyError:
                 suggestions = []
                 # Copy the emojson dictionary
-                similars = copy.deepcopy(emojson)
+                similars = copy.deepcopy(self.emojson)
                 # With each emoji, find the similarity between its name and the input emoname
                 # At the same time, find emojis whose name contains the input emoname
                 for key in similars:
@@ -74,10 +77,10 @@ class Emoji(commands.Cog):
     async def lsemo(self, ctx):
         if (re.search("Owner|Admin|Tech", str(ctx.author.roles))):
             await ctx.send("Emoji preview channel")
-            for emoji in emojson:
+            for emoji in self.emojson:
                 embed = discord.Embed()
                 embed.title = emoji
-                embed.set_image(url = emojson[emoji])
+                embed.set_image(url = self.emojson[emoji])
                 await ctx.send(embed = embed)
         else:
             await ctx.send("```Only admins can do this.```")

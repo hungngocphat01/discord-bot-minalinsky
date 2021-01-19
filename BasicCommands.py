@@ -10,6 +10,8 @@
 #   gem
 
 # Discord modules
+from discord import message
+from discord.ext.commands.core import Command
 from Administration import is_admin
 import discord
 from discord.ext import commands
@@ -18,6 +20,7 @@ import re
 from datetime import datetime
 import platform
 import pytz
+import math
 # Main vars and funcs
 from BasicDefinitions import runningOnHeroku, ver, date, startTime, startTimeStr, getTime, eventsdb, COMMAND_PREFIX
 from Logging import *
@@ -82,7 +85,7 @@ class BasicCommands(commands.Cog):
     @commands.command(pass_context = True)
     async def status(self, ctx):
         command_log(ctx)  
-        statusString = f"""```markdown
+        statusString = f"""```md
 Minalinsky v{ver}
 By ngocphat01
 Updated: {date}
@@ -214,3 +217,16 @@ Database connected: {eventsdb is not None}```"""
             logmsg = "(Truncated)...\n" + log
 
         await ctx.send(f"```css\n{logmsg}```")
+    
+    @commands.command()
+    async def addemoji(self, ctx, msg, emoji):
+        command_log(ctx)
+        e = [x for x in ctx.guild.emojis if x.name == emoji]
+        if (len(e) > 0):
+            e = e[0]
+            messages = [m for m in await ctx.channel.history(limit=50).flatten() if m != ctx.message]
+            for m in messages:
+                if msg in m.content:
+                    await m.add_reaction(e)
+                    await ctx.message.delete()
+                    return

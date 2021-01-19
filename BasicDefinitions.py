@@ -20,8 +20,8 @@ from tabulate import tabulate
 from Logging import *
 
 # Bot info
-ver = "3.9"
-date = "18/01/2021"
+ver = "3.9.1"
+date = "19/01/2021"
 runningOnHeroku = (os.getenv("RUNNING_ON_HEROKU") == "1")
 
 log(f"Minalinsky Discord Bot v{ver}")
@@ -42,9 +42,6 @@ except FileNotFoundError:
 # Init pandasql
 pquery = lambda queryStr: pandasql.sqldf(queryStr, globals())
 query = lambda queryStr: tabulate(pquery(queryStr), showindex = False, headers = [])
-
-# Read the emoji.json
-emojson = json.load(open("emoji.json"))
 
 #############  Supporting functions #############
 

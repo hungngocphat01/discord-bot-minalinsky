@@ -1,3 +1,9 @@
+# Ver 3.9.1 (19/01/2021)
+- Add addemoji
+- Combine emoji.json, responses.json into configuration.json
+- Add more reaction triggers
+- Now eval can use Python's math class
+
 # Ver 3.9 (18/01/2021)
 - Rebase help message information database.
 - Non-admins no longer be able to tag in say command.

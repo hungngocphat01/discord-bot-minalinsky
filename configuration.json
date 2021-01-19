@@ -1,3 +1,31 @@
 {
-    "admin_role_ids": [694197858127052810, 694410785048231968, 703534853001314344, 694844619698995280]
+    "admin_role_ids": [694197858127052810, 694410785048231968, 703534853001314344, 694844619698995280],
+    "emoji_replies": ["ponk", "chonk", "yuusuffer"],
+    "responses": {
+        "694191159949393980": ["J kêu cc", "J kêu gì", "J"],
+        "hello": ["Lô lô cc", "Konnichiwa~"],
+        "g9|good night|oyasumi|đi ngủ": ["Oyasuminasaiiiii~", "J ngủ ngon", "J chúc gặp nhiều ác mộng nha", "J giờ này mà ngủ à. Sớm thế"],
+        "bye": ["Mata ne~~", "Jaa ne~", "Byeee~", "J đi luôn đi"],
+        "đảng|đcs|cộng sản": ["<:dang:694251236895227965> <:dang:694251236895227965> <:dang:694251236895227965>"]
+    },
+    "custom_emojis": {
+        "ayumuaah": "https://cdn.discordapp.com/attachments/695230335465554012/698465397451653120/671598221444775946.png",
+        "kasumiwut": "https://cdn.discordapp.com/attachments/695230335465554012/698465330237931550/585644158509907978.png",
+        "setsunayeah": "https://cdn.discordapp.com/attachments/695230335465554012/698465333228470282/585644954404257802.png",
+        "rinauwu": "https://cdn.discordapp.com/attachments/695230335465554012/698465336260952086/585722780679405578.png",
+        "ai><": "https://cdn.discordapp.com/attachments/695230335465554012/698465340421832754/588604746932289547.png",
+        "setsuna-_-": "https://cdn.discordapp.com/attachments/695230335465554012/698465344171540571/588945049694502924.png",
+        "kanatasleep": "https://cdn.discordapp.com/attachments/695230335465554012/698465347661070356/590376668271738880.png",
+        "karinlove": "https://cdn.discordapp.com/attachments/695230335465554012/698465351901511760/592903036012068874.png",
+        "kasumishrug": "https://cdn.discordapp.com/attachments/695230335465554012/698465356141822012/601671460150444042.png",
+        "setsunafire": "https://cdn.discordapp.com/attachments/695230335465554012/698465360843767818/601675429799133204.png",
+        "setsunaohh": "https://cdn.discordapp.com/attachments/695230335465554012/698465378812035132/625189005276741632.png",
+        "rina": "https://cdn.discordapp.com/attachments/695230335465554012/698465383769964544/641873108701282304.png",
+        "kanata-_-": "https://cdn.discordapp.com/attachments/695230335465554012/698465393169399818/670544364816039947.png",
+        "ailaugh": "https://cdn.discordapp.com/attachments/695230335465554012/698465416628011068/690493103852879872.png",
+        "leahchirst": "https://cdn.discordapp.com/emojis/762542115103178783.png?v=1",
+        "yuusuffer": "https://cdn.discordapp.com/emojis/762306135935680542.png?v=1",
+        "shizukupeek": "https://cdn.discordapp.com/emojis/763052202549444639.png?v=1",
+        "ponk": "https://cdn.discordapp.com/emojis/694843190368272506.png?v=1"
+    }
 }

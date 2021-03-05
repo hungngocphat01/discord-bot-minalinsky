@@ -22,7 +22,8 @@ import platform
 import pytz
 import math
 # Main vars and funcs
-from BasicDefinitions import runningOnHeroku, ver, date, startTime, startTimeStr, getTime, eventsdb, COMMAND_PREFIX
+from BasicDefinitions import runningOnHeroku, ver, date, startTime, startTimeStr, getTime, COMMAND_PREFIX
+from EventQuery import db_conn
 from Logging import *
 
 class BasicCommands(commands.Cog):
@@ -94,7 +95,7 @@ Running on: {platform.system()} {platform.release()}
 Heroku: {runningOnHeroku}
 Started at: {startTimeStr} (Asia/Ho_Chi_Minh)
 Current server: {ctx.guild}
-Database connected: {eventsdb is not None}```"""
+Database connected: {db_conn is not None}```"""
         await ctx.send(statusString)
 
     # Say command

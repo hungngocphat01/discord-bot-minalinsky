@@ -12,8 +12,8 @@ import re
 import random
 import os
 from datetime import datetime
-from BasicDefinitions import pquery
 from Logging import *
+from EventQuery import event_notifier
 
 class BotEventListeners(commands.Cog):
     def __init__(self, bot):
@@ -30,75 +30,11 @@ class BotEventListeners(commands.Cog):
     async def on_ready(self):
         log("Bot ready.")
 
+        game = discord.Game("with Honoka-chan")
+        await self.bot.change_presence(status=discord.Status.idle, activity=game)
+
         # Query the next event
-        for guild in self.bot.guilds:
-            if int(os.getenv("DONT_SEND_NEXT_EV")):
-                break
-            if (guild.id == 694173494052651020):
-                POLITBURO_CH = 694199808432537672
-                NOTIF_CH = 694843380844331038
-                
-                channel = None
-
-                currentDate = datetime.now().strftime("2010-%m-%d")
-                events = pquery(f"select * from eventsdb where type = 'BD' and date = (select date from eventsdb where date > '{currentDate}' limit 1)").values.tolist()
-                log("\nNext event(s) on startup:")
-                log(events)
-                eventNo = 1
-
-                if (len(events) == 0):
-                    break
-                if (len(events) > 1):
-                    await channel.send("Next events:")
-
-                event_date_lst = str(events[0][0]).split()[0].split("-")
-                event_date = datetime(int(event_date_lst[0]), int(event_date_lst[1]), int(event_date_lst[2]))
-                curr_date = datetime(int(event_date_lst[0]), int(datetime.now().month), int(datetime.now().day))
-                delta = (event_date - curr_date).days
-
-                log("Date delta: ", delta)
-
-                if (delta == 2):
-                    channel = guild.get_channel(NOTIF_CH)
-                elif (delta <= 4):
-                    channel = guild.get_channel(POLITBURO_CH)
-                else:
-                    break
-
-                for event in events:
-                    embed = discord.Embed()
-                    if (len(events) > 1):
-                        embed.title = f"Event {eventNo}"
-                        eventNo += 1
-                    else:
-                        embed.title = f"Next event"
-
-                    embed.add_field(name = "Date",
-                        value = str(event[0].split("-")[2].split(" ")[0]) + "/" + str(event[0].split("-")[1]),
-                        inline = False
-                    )
-                    embed.add_field(
-                        name = "Type",
-                        value = "Birthday",
-                        inline = False
-                    )
-                    embed.add_field(
-                        name = "Details",
-                        value = event[2], 
-                        inline = True
-                    )
-                    embed.add_field(
-                        name = "Note",
-                        value = event[4],
-                        inline = True
-                    )
-
-                    embed.color = discord.Colour.orange()
-                    await channel.send(embed = embed)
-                    log("Event sent.\n")
-                break
-            break
-
+        await event_notifier(self.bot)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):

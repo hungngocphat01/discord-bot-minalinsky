@@ -67,8 +67,8 @@ Examples:
             tagsLst = tags.split("|")
             tagsLst.append("-rating:safe")
             
-            if num > 5:
-                await ctx.send("```To avoid spamming, only 5 images is accepted.```")
+            if num > 7:
+                await ctx.send("```To avoid spamming, only 7 images is accepted.```")
             else:
                 for i in range(0, num):
                     result = await client.random_post(tags = tagsLst)
@@ -95,7 +95,7 @@ Tags could be:
 - Character name: kousaka_honoka, nishikino_maki, hoshizora_rin, ... 
 - Many other types of tags.
 
-<number of images>: an integer represents number of images. Must be smaller or equal to 5.
+<number of images>: an integer represents number of images. Must be smaller or equal to 7.
 
 Examples: 
 {COMMAND_PREFIX}hentai kousaka_honoka

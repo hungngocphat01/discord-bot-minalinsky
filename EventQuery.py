@@ -1,111 +1,189 @@
 # Discord modules
 import discord
+import tabulate
 from discord.ext import commands
-from datetime import datetime
-from BasicDefinitions import pquery, eventsdb, query, COMMAND_PREFIX
+from datetime import date, datetime
+import pytz
+from BasicDefinitions import COMMAND_PREFIX
 from Logging import *
+import sqlite3
+import os
+
+try:
+    db_conn = sqlite3.connect("events.db")
+except:
+    db_conn = None
+
+def query_execute(sql: str):
+    if (db_conn == None):
+        log("Database not connected.")
+        return None
+    
+    result_lst = []
+
+    result_tbl = db_conn.execute(sql)
+    col_names = [description[0] for description in result_tbl.description]
+
+    for row_data in result_tbl:
+        row_dict = {}
+        for i in range(len(col_names)):
+            row_dict[col_names[i]] = row_data[i]
+        result_lst.append(row_dict)
+
+    return result_lst
+
+def make_discord_embeds(events: list) -> list:
+    result = []
+
+    for event in events:
+        embed = discord.Embed()
+        embed.title = "Next event"
+        embed.add_field(name="Date", value="{0}/{1}".format(event["day"], event["month"]))
+        embed.add_field(name="Type", value=event["type"])
+        embed.add_field(name="Details", value=event["details"])
+        embed.add_field(name="Note", value=event["note"])
+        embed.color = discord.Color.orange()
+
+        result.append(embed)
+    
+    return result
+
+def get_next_events() -> list:
+    hcm_time = pytz.timezone("Asia/Ho_Chi_Minh")
+    now = datetime.now(hcm_time)
+
+    sql = """select * from events
+        where month = {0} and
+        day == (
+            select min(day)
+            from events
+            where day >= cast(strftime('%d', 'now') as int) and month == {0}
+        )""".format(now.month)
+    query_result = query_execute(sql)
+
+    return query_result
 
 class EventQuery(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         log("Module loaded: EventQuery")
 
-    # Query command
-    @commands.command(aliases = ["query"])
-    async def botquery(self, ctx, queryStr = None):
-        command_log(ctx)
-        if queryStr != None:
-            try:
-                queryResult = "```css\nQuery result: \n\n"
-                queryResult += query(queryStr) + "```"
-                log(queryResult)
-                await ctx.send(queryResult)
-            except Exception as e:
-                eStr = f"Error: {e.__repr__()}"
-                log(eStr)
-                await ctx.send(eStr)
-        else:
-            log("No query string detected.")
-            await ctx.send(f"""```python
-    Query command usage:
-    {COMMAND_PREFIX}query "<sql_query_string>" (with quote)
-
-    Query string have to be in SQLite syntax.
-    The table name is EVENTSDB.
-    The year in the DATE field of all records is 2010.
-    There are 4 fields in the EVENTS table:
-    - DATE: event date, stored in datetime format. To specify the format, use something like: "select strftime(date, "%d-%m") as date, ..."
-    - TYPE ('BD' = 'Birthday', 'AN' = 'Anime Episode that has an Insert song', 'RE': 'Release of an important single or PV', 'SP': 'Special events')
-    - DETAILS: the detail of the event.
-    - NOTE: Note of the event. Abbreviated to optimize displaying on mobile phones.
-    - FULLNOTE: Note of the event. Not abbreviated.
-
-    Ex: {COMMAND_PREFIX}query "select * from events where date > '2010-4-1'"```""")
-
-    # Query events in a month
+    
     @commands.command()
-    async def events(self, ctx, month = None, full = None):
-        try:
-            if (str(month).lower() == "full"):
-                month = datetime.now().month
-                full = "full"
-            elif (month == None):
-                month = datetime.now().month
+    async def query(self, ctx, *, sql=None):
+        if (sql == None):
+            helpmsg = f"""
+**Syntax:** `{COMMAND_PREFIX}query <sql statement>`
+This command will execute an SQLite statement in the events database. This database has only one table, named 'events' as well.
+Line breaks are supported.
+Do not perform any SQL injection because you simply can't.
 
-            monthName = datetime(2020, int(month), 1).strftime("%B")
+**Table schema:**
+```sql
+CREATE TABLE events (
+    day         int,
+    month       int,
+    type        nvarchar(5),
+    details     nvarchar(50),
+    short_note  nvarchar(50),
+    note        nvarchar(50)
+);```
+**Example 1:** Query events in a month
+```sql
+{COMMAND_PREFIX}query select day, month, details from events where month=4 and type="BD"```
+**Example 2:** Query the nearest next event(s)
+```sql
+{COMMAND_PREFIX}query select * from events
+where month = cast(strftime('%m', 'now') as int) and
+day == (
+    select min(day)
+    from events
+    where day >= cast(strftime('%d', 'now') as int) and month == cast(strftime('%m', 'now') as int)
+);```"""
+            await ctx.send(helpmsg)
+            return
 
-            await ctx.send(f"List of events in {monthName}:")
-            if (full == None):
-                await self.botquery(ctx, f"select strftime('%d', date) as day, type, details, note from eventsdb where cast(strftime('%m', date) as integer) = {month}")
-            elif (full.lower() == "full"):
-                await self.botquery(ctx, f"select strftime('%d', date) as day, type, details, fullnote from eventsdb where cast(strftime('%m', date) as integer) = {month}")
-        except Exception as e:
-            await ctx.send(f"``Error: {e}``")
-            log(f"\nError: {e}")
+        if (db_conn == None):
+            ctx.send("```Database not connected.```")
+            return
+        
+        query_result = query_execute(sql)
+        fmt_table = tabulate.tabulate(query_result, headers="keys")
 
-    # Query the next event
+        await ctx.send(f"```glsl\nQuery result:\n\n{fmt_table}```")
+
+    @commands.command()
+    async def events(self, ctx, month=None, full=None):
+        if (db_conn == None):
+            ctx.send("```Database not connected.```")
+            return
+
+        if month is None:
+            hcm_time = pytz.timezone("Asia/Ho_Chi_Minh")
+            now = datetime.now(hcm_time)
+            month = now.month
+        
+        if full is None:
+            note = "short_note"
+        else:
+            note = "note"
+        
+        sql = "select day, type, details, {0} from events where month = {1} order by day asc".format(note, month)
+
+        query_result = query_execute(sql)
+        fmt_table = tabulate.tabulate(query_result, headers="keys")
+
+        await ctx.send(f"```glsl\nQuery result:\n\n{fmt_table}```")
+    
     @commands.command()
     async def nextev(self, ctx):
-        command_log(ctx)
-        currentDate = datetime.now().strftime("2010-%m-%d")
-        events = pquery(f"select * from eventsdb where date = (select date from eventsdb where date > '{currentDate}' limit 1)").values.tolist()
-        log(events)
-        eventNo = 1
-        eventTypes = {"BD": "Birthday", "AN": "Anime Episode with Insert Song", "RE": "Release", "SP": "Special", "PV": "PV"}
-
-        if (len(events) == 0):
-            await ctx.send("The previous event is the final one within this year. See you again next year :penguin: ")
+        if (db_conn == None):
+            await ctx.send("```Database not connected.```")
             return
-        if (len(events) > 1):
-            await ctx.send("Next events:")
+        
+        next_events = get_next_events()
+        if (len(next_events) == 0):
+            await ctx.send("```No next event.```")
+            return 
+        for embed in make_discord_embeds(next_events):
+            await ctx.send(embed=embed)
 
-        for event in events:
-            embed = discord.Embed()
-            if (len(events) > 1):
-                embed.title = f"Event {eventNo}"
-                eventNo += 1
-            else:
-                embed.title = f"Next event"
+# For use in my guild only (the creator's guild)
+async def event_notifier(bot):
+    if os.getenv("SEND_NEXT_EV") == "0":
+        log("Not sending next event.")
+        return
 
-            embed.add_field(name = "Date",
-                value = str(event[0].split("-")[2].split(" ")[0]) + "/" + str(event[0].split("-")[1]),
-                inline = False
-            )
-            embed.add_field(
-                name = "Type",
-                value = eventTypes[event[1]],
-                inline = False
-            )
-            embed.add_field(
-                name = "Details",
-                value = event[2], 
-                inline = True
-            )
-            embed.add_field(
-                name = "Note",
-                value = event[4],
-                inline = True
-            )
+    POLITCH = 694199808432537672
+    NOTIFCH = 694843380844331038
 
-            embed.color = discord.Colour.orange()
-            await ctx.send(embed = embed)  
+    events = get_next_events()
+
+    for event in events:
+        print(event)
+
+    if (len(events) == 0):
+        log("No next event to display.")
+        return
+    
+    hcm_time = pytz.timezone("Asia/Ho_Chi_Minh")
+    now = datetime.now(hcm_time)
+
+    event_day = events[0]["day"]
+
+    delta_day = event_day - now.day
+    print("Delta day:", delta_day)
+
+    if delta_day in (0, 1):
+        destination_channel = bot.get_channel(NOTIFCH)
+    elif delta_day in (2, 3):
+        destination_channel = bot.get_channel(POLITCH)
+    else:
+        return
+    
+    for embed in make_discord_embeds(events):
+        await destination_channel.send(embed=embed)
+    
+
+
+    

@@ -80,12 +80,12 @@
        "args":0
     },
     "query":{
-       "desc":"Execute an SQL query. Run this command without any argument to learn more.\nThe underlying command of events and nextev",
+       "desc":"Execute an SQLite query. Run this command without any argument to learn more.\nThe underlying command of events and nextev.",
        "args":[
           "[sql statement]"
        ],
        "arg_desc":[
-          "SQL statement to execute. Must be in SQLite syntax"
+          "SQL statement to be executed. Must be in SQLite syntax"
        ]
     },
     "role":{

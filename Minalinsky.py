@@ -23,11 +23,11 @@ bot = commands.Bot(command_prefix = COMMAND_PREFIX, intents=discord.Intents.all(
 bot.remove_command("help")
 
 ############# Import Cogs #############
+bot.add_cog(EventQuery(bot))
 bot.add_cog(BotEventListeners(bot))
 bot.add_cog(BasicCommands(bot))
 bot.add_cog(SendHelpMsg(bot))
 bot.add_cog(MemberManagement(bot))
-bot.add_cog(EventQuery(bot))
 bot.add_cog(Emoji(bot))
 bot.add_cog(GelbooruSend(bot))
 

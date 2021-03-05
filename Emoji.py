@@ -3,8 +3,22 @@ from discord.ext import commands
 import copy
 import re
 import json
-from BasicDefinitions import similarityBetween, COMMAND_PREFIX
+from BasicDefinitions import COMMAND_PREFIX
 from Logging import *
+
+def similarityBetween(str1, str2):
+    same = 0
+    n1 = len(str1)
+    n2 = len(str2)
+
+    if n1 > n2:
+        Range = range(0, n2)
+    else:
+        Range = range(0, n1)
+    for i in Range:
+        if str1[i] == str2[i]:
+            same += 1
+    return same
 
 class Emoji(commands.Cog):
     def __init__(self, bot):

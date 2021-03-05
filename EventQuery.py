@@ -1,13 +1,15 @@
 # Discord modules
 import discord
 import tabulate
-from discord.ext import commands
-from datetime import date, datetime
 import pytz
-from BasicDefinitions import COMMAND_PREFIX
-from Logging import *
 import sqlite3
 import os
+import re
+from discord.ext import commands
+from datetime import date, datetime
+from Administration import is_admin
+from BasicDefinitions import COMMAND_PREFIX
+from Logging import *
 
 try:
     db_conn = sqlite3.connect("events.db")
@@ -71,6 +73,7 @@ class EventQuery(commands.Cog):
     
     @commands.command()
     async def query(self, ctx, *, sql=None):
+        command_log(ctx)
         if (sql == None):
             helpmsg = f"""
 **Syntax:** `{COMMAND_PREFIX}query <sql statement>`
@@ -104,9 +107,14 @@ day == (
             return
 
         if (db_conn == None):
-            ctx.send("```Database not connected.```")
+            await ctx.send("```Database not connected.```")
             return
-        
+
+        if re.match("alter|insert|delete|update|drop|create", sql.lower()):
+            log("SQL injection detected.")
+            await ctx.send("```Trying to perform an SQL injection attack huh?```")
+            return
+    
         query_result = query_execute(sql)
         fmt_table = tabulate.tabulate(query_result, headers="keys")
 

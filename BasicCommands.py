@@ -37,7 +37,7 @@ class BasicCommands(commands.Cog):
     @commands.command(pass_context = True)
     async def purge(self, ctx, amount = 0):
         command_log(ctx)
-        if (re.search("Owner|Admin|Tech", str(ctx.author.roles))):
+        if (is_admin(ctx.author.top_role.id)):
             if amount > 0:
                 await ctx.channel.purge(limit = amount + 1)
                 await ctx.send(f"```🗑️ {amount} meseeji wo keshimashita~```")

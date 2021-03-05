@@ -4,7 +4,7 @@
 import discord
 from discord.ext import commands
 # Main vars and funcs
-from BasicDefinitions import runningOnHeroku, ver, date, startTime, startTimeStr, getTime, eventsdb, COMMAND_PREFIX
+from BasicDefinitions import runningOnHeroku, ver, date, startTime, startTimeStr, getTime, COMMAND_PREFIX
 from Logging import *
 import json
 

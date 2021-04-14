@@ -29,7 +29,10 @@ def query_execute(sql: str):
     for row_data in result_tbl:
         row_dict = {}
         for i in range(len(col_names)):
-            row_dict[col_names[i]] = row_data[i]
+            if row_data[i] != "":
+                row_dict[col_names[i]] = row_data[i]
+            else:
+                row_dict[col_names[i]] = "--"
         result_lst.append(row_dict)
 
     return result_lst

@@ -1,3 +1,7 @@
+# Ver 4.1 (14/04.2021)
+- Add body information.
+- Fix %nextev returns None in Note.
+
 # Ver 4.0 (05/03/2021)
 - Rebuild database.
 - Rebuild the whole event notification mechanism.

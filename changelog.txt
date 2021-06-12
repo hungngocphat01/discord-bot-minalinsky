@@ -1,3 +1,6 @@
+# Ver 4.2 (12/6/2021)
+- Events now notified only once.
+
 # Ver 4.1 (14/04.2021)
 - Add body information.
 - Fix %nextev returns None in Note.

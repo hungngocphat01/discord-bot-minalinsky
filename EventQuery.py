@@ -8,7 +8,7 @@ import re
 from discord.ext import commands
 from datetime import date, datetime
 from Administration import is_admin
-from BasicDefinitions import COMMAND_PREFIX
+from BasicDefinitions import COMMAND_PREFIX, runningOnHeroku
 from Logging import *
 
 try:
@@ -16,6 +16,7 @@ try:
 except:
     db_conn = None
 
+# Returns: list of records, each encoded in a dictionary (keys = column names)
 def query_execute(sql: str):
     if (db_conn == None):
         log("Database not connected.")
@@ -32,8 +33,11 @@ def query_execute(sql: str):
             if row_data[i] != "":
                 row_dict[col_names[i]] = row_data[i]
             else:
-                row_dict[col_names[i]] = "--"
+                row_dict[col_names[i]] = "null"
         result_lst.append(row_dict)
+
+    if (len(result_lst) == 0):
+        return None
 
     return result_lst
 
@@ -72,7 +76,6 @@ class EventQuery(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         log("Module loaded: EventQuery")
-
     
     @commands.command()
     async def query(self, ctx, *, sql=None):
@@ -170,6 +173,9 @@ async def event_notifier(bot):
 
     events = get_next_events()
 
+    if events is None:
+        return
+
     for event in events:
         print(event)
 
@@ -183,18 +189,17 @@ async def event_notifier(bot):
     event_day = events[0]["day"]
 
     delta_day = event_day - now.day
-    print("Delta day:", delta_day)
+    log("Delta day:", delta_day)
 
-    if delta_day in (0, 1):
-        destination_channel = bot.get_channel(NOTIFCH)
-    elif delta_day in (2, 3):
+    if delta_day in (0, 1) and int(events[0]["notified"]) == 0:
+        destination_channel = bot.get_channel(NOTIFCH)        
+        db_conn.execute("update events set notified = 1 where month = {0} and day = {1};".format(events[0]["month"], events[0]["day"]))
+        db_conn.commit()
+        
+    elif delta_day == 2:
         destination_channel = bot.get_channel(POLITCH)
     else:
         return
-    
+
     for embed in make_discord_embeds(events):
         await destination_channel.send(embed=embed)
-    
-
-
-    

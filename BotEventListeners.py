@@ -13,7 +13,7 @@ import random
 import os
 from datetime import datetime
 from Logging import *
-from EventQuery import event_notifier
+from EventQuery import event_notifier, db_conn
 
 class BotEventListeners(commands.Cog):
     def __init__(self, bot):
@@ -32,6 +32,11 @@ class BotEventListeners(commands.Cog):
 
         game = discord.Game("with Honoka-chan")
         await self.bot.change_presence(status=discord.Status.idle, activity=game)
+
+        # If first day of the year: reset 'notified' column
+        today = datetime.now()
+        if today.month == 1 and today.day == 1:
+            db_conn.execute("update events set notified = 0")
 
         # Query the next event
         await event_notifier(self.bot)

@@ -28,7 +28,6 @@ bot.add_cog(BotEventListeners(bot))
 bot.add_cog(BasicCommands(bot))
 bot.add_cog(SendHelpMsg(bot))
 bot.add_cog(MemberManagement(bot))
-bot.add_cog(Emoji(bot))
 bot.add_cog(GelbooruSend(bot))
 
 ############# Run bot #############

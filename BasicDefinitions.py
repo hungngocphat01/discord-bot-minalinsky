@@ -38,8 +38,11 @@ def getTime(zone):
     return now_zone.strftime("%d/%m/%Y, %H:%M:%S")
 
 #############  Load database  #############
+db_url = os.getenv("DATABASE_URL")
+if db_url.startswith("postgres://"):
+    db_url = db_url.replace("postgres://", "postgresql://")
 Base = automap_base()
-engine = create_engine(os.getenv("DATABASE_URL"))
+engine = create_engine(db_url)
 
 # Reflect the tables
 Base.prepare(engine, reflect=True)

@@ -8,6 +8,12 @@ import discord
 from discord.ext import commands
 from Administration import *
 from Logging import *
+import io
+from tqdm import tqdm
+import time
+from BasicDefinitions import runningOnHeroku
+import random
+import sys 
 
 class MemberManagement(commands.Cog):
     def __init__(self, bot):
@@ -119,6 +125,76 @@ class MemberManagement(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send("```Error: Cannot get member from mention```")
+
+    @commands.command()
+    @commands.is_owner()
+    async def multiplexer(self, ctx: commands.Context):
+        return # dangerous function, disable for now
+        # Check for heroku
+        if runningOnHeroku:
+            await ctx.send("```For security reasons, this command can only run when hosting on a local machine.```")
+            return 
+        # Check for params and get channel
+        channels = ctx.message.channel_mentions
+        if (channels is None or len(channels) < 2):
+            await ctx.send("```Invalid parameters: insufficient channels```")
+            return 
+        src_channels: discord.TextChannel = channels[0:-1]
+        dst_channel: discord.TextChannel = channels[-1] 
+        # Fetching messages
+        print("Source channels:", [c.name for c in src_channels], "\nDestination:", str(dst_channel))
+        time.sleep(2)
+        # Fetch messages
+        src_msgs = []
+        for c in src_channels:
+            print("Fetching channel %s..." % c.name)
+            messages = await c.history(limit=None,oldest_first=True).flatten()
+            print("Fetched %d...`" % (len(messages)))
+            src_msgs += messages
+        # Scramble messages
+        # print("Scrambling messages")
+        # random.shuffle(src_msgs)
+
+        print("Pushing messsages to dest channel in 5 sec...")
+        time.sleep(5)
+        # Create a migrator (Webhook)
+        fake_user: discord.Webhook = await dst_channel.create_webhook(name="Channel migrator", avatar=None) 
+        m: discord.Message
+        for m in tqdm(src_msgs, file=sys.stdout):
+            # Get author name and avatar
+            author_name: str = m.author.display_name
+            author_avatar_link: str = m.author.avatar_url
+            # Get attachment and message content
+            has_content = False
+            attached = False
+            attachments = [] 
+            if len(m.attachments) > 0:
+                attached = True
+                atm: discord.Attachment
+                for atm in m.attachments:
+                    byte_stream = io.BytesIO(await atm.read())
+                    attachment_filename = atm.filename
+                    attachments.append(discord.File(byte_stream, attachment_filename, spoiler=atm.is_spoiler()))
+            if len(m.content) > 0:
+                has_content = True   
+            # Multiplexing nsfw channels: messages are shuffled, so only messages with attachments or links are allowed
+            # if not (attached or ("http" in m.content)):
+            #     tqdm.write("Skipping %s" % m.content)
+            #     continue
+            try:
+                await fake_user.send(
+                    username=author_name,
+                    avatar_url=author_avatar_link,
+                    files=attachments if attached else None,
+                    content=str(m.content) if has_content else None
+                )
+            except:
+                tqdm.write("Error when sending a message. Ignoring...")
+                continue
+            tqdm.write(f"Message sent from {author_name}. Content: '{m.content[0:20]}...' Image: {attached}")
+            
+        await fake_user.delete()
+        print("```Migration completed```")
 
     @commands.command()
     async def role(self, ctx, cmd, mention, rolename):

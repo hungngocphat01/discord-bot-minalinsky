@@ -11,7 +11,6 @@ from BasicDefinitions import COMMAND_PREFIX, TOKEN
 # Import Cogs
 from BasicCommands import BasicCommands
 from BotEventListeners import BotEventListeners
-from Emoji import Emoji
 from EventQuery import EventQuery
 from GelbooruSend import GelbooruSend
 from SendHelpMsg import SendHelpMsg

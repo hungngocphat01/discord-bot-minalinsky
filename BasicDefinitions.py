@@ -14,14 +14,14 @@ import json
 import pytz
 import os
 # Database simulation libraries
-import pandas as pd
-import pandasql
-from tabulate import tabulate
+from sqlalchemy.ext.automap import automap_base
+from sqlalchemy.orm import Session
+from sqlalchemy import create_engine
 from Logging import *
 
 # Bot info
-ver = "4.2"
-date = "12/06/2021"
+ver = "5.0 beta"
+date = "22/07/2021"
 runningOnHeroku = (os.getenv("RUNNING_ON_HEROKU") == "1")
 
 log(f"Minalinsky Discord Bot v{ver}")
@@ -36,6 +36,16 @@ def getTime(zone):
     now_utc = datetime.now(pytz.timezone("UTC"))
     now_zone = now_utc.astimezone(pytz.timezone(zone))
     return now_zone.strftime("%d/%m/%Y, %H:%M:%S")
+
+#############  Load database  #############
+Base = automap_base()
+engine = create_engine(os.getenv("DATABASE_URL"))
+
+# Reflect the tables
+Base.prepare(engine, reflect=True)
+
+# Start new session
+session = Session(engine)
 
 #############  Init bot ############# 
 TOKEN = str(os.getenv("BOT_TOKEN"))

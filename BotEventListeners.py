@@ -12,16 +12,16 @@ import re
 import random
 import os
 from datetime import datetime
+from Administration import query_settings
+from EventQuery import EventQuery
 from Logging import *
-from EventQuery import event_notifier, db_conn
 
 class BotEventListeners(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        with open("configuration.json", mode="rt") as f:
-            conf = json.loads(f.read())
-            self.responses_json = conf["responses"]
-            self.emoji_replies = conf["emoji_replies"]
+
+        self.responses_json = query_settings("responses")
+        self.emoji_replies = query_settings("emoji_replies")
 
         log("Module loaded: BotEventListeners")
         
@@ -36,10 +36,10 @@ class BotEventListeners(commands.Cog):
         # If first day of the year: reset 'notified' column
         today = datetime.now()
         if today.month == 1 and today.day == 1:
-            db_conn.execute("update events set notified = 0")
+            pass
 
         # Query the next event
-        await event_notifier(self.bot)
+        await EventQuery.event_notifier(self.bot)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):

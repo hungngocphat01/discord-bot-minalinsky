@@ -23,7 +23,7 @@ import pytz
 import math
 # Main vars and funcs
 from BasicDefinitions import runningOnHeroku, ver, date, startTime, startTimeStr, getTime, COMMAND_PREFIX
-from EventQuery import db_conn
+from EventQuery import session
 from Logging import *
 
 class BasicCommands(commands.Cog):
@@ -88,14 +88,14 @@ class BasicCommands(commands.Cog):
         command_log(ctx)  
         statusString = f"""```md
 Minalinsky v{ver}
-By ngocphat01
+By Hung Ngoc Phat
 Updated: {date}
 
 Running on: {platform.system()} {platform.release()}
 Heroku: {runningOnHeroku}
 Started at: {startTimeStr} (Asia/Ho_Chi_Minh)
 Current server: {ctx.guild}
-Database connected: {db_conn is not None}```"""
+SQLAlchemy session: {session.is_active}```"""
         await ctx.send(statusString)
 
     # Say command

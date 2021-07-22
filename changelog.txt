@@ -1,4 +1,6 @@
-# Ver 4.2 (12/6/2021)
+# Ver 5.0 (23/07/2021)
+- Migrate database backend to SQLAlchemy + PostgreSQL.
+- Notifications are more Vietnamese-friendly
 - Events now notified only once.
 
 # Ver 4.1 (14/04.2021)
@@ -51,7 +53,7 @@
 - Fix "no details" bug with %whois.
 
 # Ver 3.5 (???)
-- Start to record changelog.
+- Start recording changelog.
 - Migrate responses to a discrete json file.
 - Improvement in %whois: role color.
 

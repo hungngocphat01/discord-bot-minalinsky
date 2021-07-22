@@ -1,205 +1,122 @@
 # Discord modules
+from os import pardir
 import discord
 import tabulate
-import pytz
-import sqlite3
-import os
-import re
 from discord.ext import commands
 from datetime import date, datetime
-from Administration import is_admin
-from BasicDefinitions import COMMAND_PREFIX, runningOnHeroku
+from Administration import is_admin, query_settings, mark_as_notified
+from BasicDefinitions import COMMAND_PREFIX, runningOnHeroku, session
+import pandas as pd
+from tabulate import tabulate
 from Logging import *
+import os
 
-try:
-    db_conn = sqlite3.connect("events.db")
-except:
-    db_conn = None
+#select * from events where month=7 and day = (select min(day) from events where month = 7 and day >= extract(day from now()));
 
-# Returns: list of records, each encoded in a dictionary (keys = column names)
-def query_execute(sql: str):
-    if (db_conn == None):
-        log("Database not connected.")
-        return None
+def legacy_query_execute(sql: str):
+    if not session.is_active:
+        log("Database session is not active")
+        return None 
     
-    result_lst = []
+    # Execute sql
+    try:
+        resultproxy = session.execute(sql)
+        return [x._asdict() for x in resultproxy]
+    except:
+        session.rollback()
+        raise 
 
-    result_tbl = db_conn.execute(sql)
-    col_names = [description[0] for description in result_tbl.description]
-
-    for row_data in result_tbl:
-        row_dict = {}
-        for i in range(len(col_names)):
-            if row_data[i] != "":
-                row_dict[col_names[i]] = row_data[i]
-            else:
-                row_dict[col_names[i]] = "null"
-        result_lst.append(row_dict)
-
-    if (len(result_lst) == 0):
-        return None
-
-    return result_lst
-
-def make_discord_embeds(events: list) -> list:
-    result = []
-
-    for event in events:
-        embed = discord.Embed()
-        embed.title = "Next event"
-        embed.add_field(name="Date", value="{0}/{1}".format(event["day"], event["month"]))
-        embed.add_field(name="Type", value=event["type"])
-        embed.add_field(name="Details", value=event["details"])
-        embed.add_field(name="Note", value=event["note"])
-        embed.color = discord.Color.orange()
-
-        result.append(embed)
-    
-    return result
-
-def get_next_events() -> list:
-    hcm_time = pytz.timezone("Asia/Ho_Chi_Minh")
-    now = datetime.now(hcm_time)
-
-    sql = """select * from events
-        where month = {0} and
-        day == (
-            select min(day)
-            from events
-            where day >= cast(strftime('%d', 'now') as int) and month == {0}
-        )""".format(now.month)
-    query_result = query_execute(sql)
-
-    return query_result
+def tabular_format(lst: list):
+    df = pd.DataFrame(lst)
+    return tabulate(df, headers="keys")
 
 class EventQuery(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         log("Module loaded: EventQuery")
-    
+
     @commands.command()
-    async def query(self, ctx, *, sql=None):
+    async def query(self, ctx, sql=None):
         command_log(ctx)
         if (sql == None):
-            helpmsg = f"""
-**Syntax:** `{COMMAND_PREFIX}query <sql statement>`
-This command will execute an SQLite statement in the events database. This database has only one table, named 'events' as well.
-Line breaks are supported.
-Do not perform any SQL injection because you simply can't.
-
-**Table schema:**
-```sql
-CREATE TABLE events (
-    day         int,
-    month       int,
-    type        nvarchar(5),
-    details     nvarchar(50),
-    short_note  nvarchar(50),
-    note        nvarchar(50)
-);```
-**Example 1:** Query events in a month
-```sql
-{COMMAND_PREFIX}query select day, month, details from events where month=4 and type="BD"```
-**Example 2:** Query the nearest next event(s)
-```sql
-{COMMAND_PREFIX}query select * from events
-where month = cast(strftime('%m', 'now') as int) and
-day == (
-    select min(day)
-    from events
-    where day >= cast(strftime('%d', 'now') as int) and month == cast(strftime('%m', 'now') as int)
-);```"""
-            await ctx.send(helpmsg)
-            return
-
-        if (db_conn == None):
-            await ctx.send("```Database not connected.```")
-            return
-
-        if re.match("alter|insert|delete|update|drop|create", sql.lower()):
-            log("SQL injection detected.")
-            await ctx.send("```Trying to perform an SQL injection attack huh?```")
-            return
-    
-        query_result = query_execute(sql)
-        fmt_table = tabulate.tabulate(query_result, headers="keys")
-
-        await ctx.send(f"```glsl\nQuery result:\n\n{fmt_table}```")
-
-    @commands.command()
-    async def events(self, ctx, month=None, full=None):
-        if (db_conn == None):
-            ctx.send("```Database not connected.```")
-            return
-
-        if month is None:
-            hcm_time = pytz.timezone("Asia/Ho_Chi_Minh")
-            now = datetime.now(hcm_time)
-            month = now.month
-        
-        if full is None:
-            note = "short_note"
-        else:
-            note = "note"
-        
-        sql = "select day, type, details, {0} from events where month = {1} order by day asc".format(note, month)
-
-        query_result = query_execute(sql)
-        fmt_table = tabulate.tabulate(query_result, headers="keys")
-
-        await ctx.send(f"```glsl\nQuery result:\n\n{fmt_table}```")
-    
-    @commands.command()
-    async def nextev(self, ctx):
-        if (db_conn == None):
-            await ctx.send("```Database not connected.```")
-            return
-        
-        next_events = get_next_events()
-        if (len(next_events) == 0):
-            await ctx.send("```No next event.```")
+            await ctx.send("```Please refer to the help command.```")
             return 
-        for embed in make_discord_embeds(next_events):
-            await ctx.send(embed=embed)
 
-# For use in my guild only (the creator's guild)
-async def event_notifier(bot):
-    if os.getenv("SEND_NEXT_EV") == "0":
-        log("Not sending next event.")
-        return
-
-    POLITCH = 694199808432537672
-    NOTIFCH = 694843380844331038
-
-    events = get_next_events()
-
-    if events is None:
-        return
-
-    for event in events:
-        print(event)
-
-    if (len(events) == 0):
-        log("No next event to display.")
-        return
-    
-    hcm_time = pytz.timezone("Asia/Ho_Chi_Minh")
-    now = datetime.now(hcm_time)
-
-    event_day = events[0]["day"]
-
-    delta_day = event_day - now.day
-    log("Delta day:", delta_day)
-
-    if delta_day in (0, 1) and int(events[0]["notified"]) == 0:
-        destination_channel = bot.get_channel(NOTIFCH)        
-        db_conn.execute("update events set notified = 1 where month = {0} and day = {1};".format(events[0]["month"], events[0]["day"]))
-        db_conn.commit()
+        # Check for the first word
+        print(sql.split()[0].lower())
+        if sql.split()[0].lower() != "select":
+            await ctx.send("```Only select statements are allowed.```")
+            return 
         
-    elif delta_day == 2:
-        destination_channel = bot.get_channel(POLITCH)
-    else:
-        return
+        try:
+            result_lst = legacy_query_execute(sql)
+            fmt_table = tabular_format(result_lst)
+            await ctx.send(f"```glsl\nQuery result:\n\n{fmt_table}```")
+        except:
+            raise
 
-    for embed in make_discord_embeds(events):
-        await destination_channel.send(embed=embed)
+    @staticmethod        
+    def get_next_events(ignore_notified: bool = False):
+        this_year = datetime.now().year
+        notification_filter = ""
+        if ignore_notified:
+            notification_filter = "notified='false' and"
+
+        sql = f"""select * 
+from events 
+where {notification_filter} make_date({this_year}, month, day) = (
+    select min(make_date({this_year}, month, day)) 
+    from events 
+    where make_date({this_year}, month, day) >= now()::date
+);"""   
+        return legacy_query_execute(sql)
+
+    @staticmethod
+    def make_vietnamese_notification(events: list):
+        parts = []
+        parts.append("**Sự kiện sắp tới:**")
+
+        for event in events:
+            if event["type"] == "BD":
+                desc = "(%s)" % event["note"] if len(event["note"]) > 0 else "\b"
+                s = "- Sinh nhật của %s %s vào ngày %d/%d." % (
+                    event["details"], desc, int(event["day"]), int(event["month"]))
+                parts.append(s)
+        return "\n".join(parts)
+    
+    @commands.command()
+    async def nextev(self, ctx, month=None):
+        command_log(ctx)
+        if (month == None):
+            month = datetime.now().month
+        
+        message = self.make_vietnamese_notification(self.get_next_events())
+        await ctx.send(f"{message}")
+    
+    @staticmethod
+    async def event_notifier(bot):
+        if os.getenv("SEND_NEXT_EV") == "0":
+            log("Not sending next event.")
+            #return
+        
+        events = EventQuery.get_next_events(ignore_notified=True)
+        if len(events) == 0:
+            log("No next event to display.")
+            return            
+        print(events)
+        event_day = int(events[0]["day"])
+        event_month = int(events[0]["month"])
+        event_date = datetime(datetime.now().year, event_month, event_day)
+        date_diff = datetime.now() - event_date
+
+        if date_diff.days in [2, 3]:
+            notify_channel_id = query_settings("pre-notify-channel-id")
+        elif date_diff.days <= 1:
+            notify_channel_id = query_settings("notify-channel-id")
+            mark_as_notified(event_day, event_month)
+        else:
+            return
+        
+        destination_channel: discord.TextChannel = bot.get_channel(notify_channel_id)
+
+        await destination_channel.send(content=EventQuery.make_vietnamese_notification(events))

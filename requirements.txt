@@ -5,3 +5,5 @@ pandasql
 tabulate
 xlrd
 pygelbooru
+sqlalchemy
+psycopg2

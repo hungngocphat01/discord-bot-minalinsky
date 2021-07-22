@@ -7,3 +7,4 @@ xlrd
 pygelbooru
 sqlalchemy
 psycopg2
+tqdm

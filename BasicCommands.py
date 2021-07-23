@@ -22,8 +22,7 @@ import platform
 import pytz
 import math
 # Main vars and funcs
-from BasicDefinitions import runningOnHeroku, ver, date, startTime, startTimeStr, getTime, COMMAND_PREFIX
-from EventQuery import session
+from BasicDefinitions import runningOnHeroku, ver, date, startTime, startTimeStr, getTime, COMMAND_PREFIX, session_state
 from Logging import *
 
 class BasicCommands(commands.Cog):
@@ -53,7 +52,7 @@ class BasicCommands(commands.Cog):
     @commands.command(pass_context = True, aliases = ["eval"])
     async def evaluate(self, ctx, *, arg):
         command_log(ctx)
-        if (not re.search("import|open|def|sys|os", arg)) or ("owner" in ctx.message.author.lower()):
+        if (not re.search("import|open|def|sys|os", arg)) or not is_admin(ctx.author.top_role.id):
             try:
                 await ctx.send(f"```{eval(arg)}```")
             except Exception as e:
@@ -95,7 +94,7 @@ Running on: {platform.system()} {platform.release()}
 Heroku: {runningOnHeroku}
 Started at: {startTimeStr} (Asia/Ho_Chi_Minh)
 Current server: {ctx.guild}
-SQLAlchemy session: {session.is_active}```"""
+SQLAlchemy session: {session_state()}```"""
         await ctx.send(statusString)
 
     # Say command

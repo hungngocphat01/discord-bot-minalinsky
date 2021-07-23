@@ -20,7 +20,7 @@ from sqlalchemy import create_engine
 from Logging import *
 
 # Bot info
-ver = "5.0 beta"
+ver = "5.0.1 beta"
 date = "22/07/2021"
 runningOnHeroku = (os.getenv("RUNNING_ON_HEROKU") == "1")
 
@@ -49,7 +49,7 @@ Base.prepare(engine, reflect=True)
 
 # Start new session
 session = Session(engine)
-
+session_state = lambda: session.is_active
 #############  Init bot ############# 
 TOKEN = str(os.getenv("BOT_TOKEN"))
 COMMAND_PREFIX = "%"

@@ -3,7 +3,9 @@
 
 # Ver 5.0 (23/07/2021)
 - Migrate database backend to SQLAlchemy + PostgreSQL.
-- Notifications are more Vietnamese-friendly
+- Rebuild the whole event notification mechanism (again).
+- Migrate bot settings from json to PostgreSQL.
+- Notifications now are more Vietnamese-friendly.
 - Events now notified only once.
 
 # Ver 4.1 (14/04.2021)
@@ -11,23 +13,27 @@
 - Fix %nextev returns None in Note.
 
 # Ver 4.0 (05/03/2021)
-- Rebuild database.
+- Migrate database backend to SQLite.
+- Rebuild whole `EventQuery` module.
 - Rebuild the whole event notification mechanism.
 
+# Ver 3.9.2 (20/02/2021)
+- Fix permissions errors.
+
 # Ver 3.9.1 (19/01/2021)
-- Add addemoji.
-- Combine emoji.json, responses.json into configuration.json.
+- Add `%addemoji`.
+- Combine `emoji.json`, `responses.json` into `configuration.json`.
 - Add more reaction triggers.
-- Now eval can use Python's math class.
+- Now `%eval` can utilize Python's math library.
 
 # Ver 3.9 (18/01/2021)
-- Rebase help message information database.
-- Non-admins no longer be able to tag in say command.
+- Rebuild help message information database.
+- Non-admins no longer be able to tag in `%say` command.
 - Remove old stats command, rename gstat into stats
-- Fix setrole, rename setrole into role.
+- Fix `%setrole`, rename `%setrole` into `%role`.
 
 # Ver 3.8.1 (04/01/2021)
-- Add color and timecode to journalctl.
+- Add color and timecode to `%journalctl`.
 
 # Ver 3.8 (04/01/2021)
 - Change logging method.
@@ -36,10 +42,10 @@
 
 # Ver 3.7.3 (27/11/2020)
 - Add Intents.
-- Add new command: gstat.
+- Add new command: `%gstat`.
 
 # Ver 3.7.2 (23/11/2020)
-- Add new command: khabanh.
+- Add new command: `%khabanh`.
 
 # Ver 3.7.1 (20/10/2020)
 - Add "me" optional argument to whois command.
@@ -49,17 +55,77 @@
 - Fix HTTPException 400 in GelbooruSend when the tag is invalid.
 - Add new LL seiyuu's birthday: Yano Hinaki (Yuu).
 - 3 or 4 days left until next birthday event: send a notification message to politburo (#bộ-chính-trị) channel.
-- Add new environment varible: SEND_NEXT_EV.
+- Add new environment varible: `SEND_NEXT_EV`.
 
-# Ver 3.6 (01/10/2020)
-- Improvement in %whois: special permissions.
-- Fix "no details" bug with %whois.
+# Ver 3.6 (02/10/2020)
+- Improvement in `%whois`: show special permissions.
+- Fix "no details" bug in `%whois`.
 
-# Ver 3.5 (???)
+# Ver 3.5 (02/10/2020)
 - Start recording changelog.
-- Migrate responses to a discrete json file.
-- Improvement in %whois: role color.
+- Migrate responses to a separated json file.
+- Improvement in `%whois`: role color.
 
-# Older
-- Didn't remember anything.
-- Initial build: v1.0 (31/03/2020)
+# Ver 3.4 (23/09/2020)
+- Update help command.
+- `Admin sáng cao` role cannot assign roles using `%role` command.
+
+# Ver 3.3 (28/08/2020)
+- Update emoji module.
+- Update %whois.
+- New module: MemberManagement.
+- Add setrole command.
+- Change event notification interval.
+
+# Ver 3.2 (27/08/2020)
+- `%nsfw` is now a new command. `%art` cannot send nsfw content anymore.
+- New module: SendHelpMsg.
+- Add activity section to `%whois`.
+
+# Ver 3.1 (26/08/2020)
+- Add `%stats%` and `%whois` command.
+
+# Ver 3.0 (16/08/2020)
+- Add upcoming events notification on bot boot-up.
+- Update events database.
+
+# Ver 2.8 (19/06/2020)
+- Add more responses to certain messages.
+- Add responses when mentioned.
+- Update events database.
+
+# Ver 2.6 (03/05/2020)
+- Add love gem convert feature.
+- Update events database: add Hello! Love Live!! characters.
+- Change `DanbooruSend` to `GelbooruSend`.
+- Rename `%danbooru` command to `%art`.
+
+# Ver 2.5 (03/05/2020)
+- Add error-handling with `traceback`.
+- Improve module: `DanbooruSend`.
+
+# Ver 2.0 (02/05/2020)
+- Change emoji matching algorithm.
+- Split bot into Cogs (object-oriented model).
+- Add new module: `DanbooruSend`.
+
+# Ver 1.7 (02/05/2020)
+- Change PostgresSQL backend to XLSX backend.
+- Add emoji feature and new emojis.
+
+# Ver 1.5 (01/05/2020)
+- Add feature to view fullnote without specifying a month [in events].
+- Add database manipulation commands.
+- Improve compability with Heroku (separated command prefix).
+
+# Ver 1.0 (30/04/2020)
+- Add data to database.
+- Change DBMS to PostgreSQL.
+
+# Ver 0.1 (30/04/2020)
+- Initial release.
+- Only runs on local machine.
+- Commands: purge, eval, shutdown, status, help, say, time.
+- Events database backend: MySQL (local).
+- Basic query function.
+- Replies to certain messages e.g. "bye", "hello", "đảng", ...

@@ -1,7 +1,6 @@
 # This file is the basic definition file. It defines the following things:
 #   Bot info
 #   Database source file
-#   Emoji json
 #   Supporting functions
 
 # Discord modules
@@ -9,26 +8,26 @@ import discord
 from discord.ext import commands
 # Supporting modules
 from datetime import datetime
-import re
-import json
 import pytz
 import os
-# Database simulation libraries
+# DB modules
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
-from Logging import *
+from sqlalchemy import create_engine, update
 
 # Bot info
-ver = "5.0.1 beta"
-date = "22/07/2021"
+ver = "5.0.2"
+date = "24/07/2021"
 runningOnHeroku = (os.getenv("RUNNING_ON_HEROKU") == "1")
 
-log(f"Minalinsky Discord Bot v{ver}")
-log(f"Last updated {date}")
-log(f"Scripted in Python 3.")
-log(f"(c) 2020-2021 Hung Ngoc Phat")
-log("================================")
+bot_intro = f"""Minalinsky Discord Bot v{ver}
+Last updated {date}
+Scripted in Python 3.
+(c) 2020-2021 Hung Ngoc Phat
+================================
+"""
+
+print(bot_intro)
 
 #############  Supporting functions #############
 
@@ -50,6 +49,7 @@ Base.prepare(engine, reflect=True)
 # Start new session
 session = Session(engine)
 session_state = lambda: session.is_active
+
 #############  Init bot ############# 
 TOKEN = str(os.getenv("BOT_TOKEN"))
 COMMAND_PREFIX = "%"

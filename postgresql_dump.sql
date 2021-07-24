@@ -67,6 +67,48 @@ CREATE TABLE public.settings (
 ALTER TABLE public.settings OWNER TO hiraki;
 
 --
+-- Name: systemlog; Type: TABLE; Schema: public; Owner: hiraki
+--
+
+CREATE TABLE public.systemlog (
+    id integer NOT NULL,
+    "time" timestamp without time zone,
+    content text
+);
+
+
+ALTER TABLE public.systemlog OWNER TO hiraki;
+
+--
+-- Name: systemlog_id_seq; Type: SEQUENCE; Schema: public; Owner: hiraki
+--
+
+CREATE SEQUENCE public.systemlog_id_seq
+    AS integer
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+ALTER TABLE public.systemlog_id_seq OWNER TO hiraki;
+
+--
+-- Name: systemlog_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: hiraki
+--
+
+ALTER SEQUENCE public.systemlog_id_seq OWNED BY public.systemlog.id;
+
+
+--
+-- Name: systemlog id; Type: DEFAULT; Schema: public; Owner: hiraki
+--
+
+ALTER TABLE ONLY public.systemlog ALTER COLUMN id SET DEFAULT nextval('public.systemlog_id_seq'::regclass);
+
+
+--
 -- Data for Name: body; Type: TABLE DATA; Schema: public; Owner: hiraki
 --
 
@@ -77,7 +119,6 @@ Kotori_Minami	159	80	58	80	Otonokizaka	2
 Hanayo_Koizumi	156	82	60	83	Otonokizaka	1
 Rin_Hoshizora	155	75	59	80	Otonokizaka	1
 Maki_Nishikino	161	78	56	83	Otonokizaka	1
-Nico_Yazawa	154	74	57	79	Otonokizaka	3
 Eli_Ayase	162	88	60	84	Otonokizaka	3
 Nozomi_Tojo	159	90	60	82	Otonokizaka	3
 Chika_Takami	157	82	59	83	Uranohoshi	2
@@ -98,6 +139,7 @@ Rina_Tennoji	149	71	52	75	Nijigasaki	1
 Emma_Verde	166	92	61	88	Nijigasaki	3
 Kanata_Konoe	158	85	60	86	Nijigasaki	3
 Karin_Asaka	167	88	57	89	Nijigasaki	3
+Nico_Yazawa	154	71	57	79	Otonokizaka	3
 \.
 
 
@@ -155,8 +197,6 @@ COPY public.events (day, month, type, details, short_note, note, notified) FROM 
 12	7	BD	Nanjou Yoshino	Eli	Eli's Seiyuu	f
 13	7	BD	Tsushima Yoshiko			f
 16	7	AN	SS S1 E3	D. D. Daijoubu	Daisuki Dattara Daijoubu	f
-29	7	AN	SIP S2 E13	H. Maker	Happy Maker	f
-1	8	BD	Takami Chika			f
 3	8	BD	Kousaka Honoka	HONKKK	HONKKK	f
 6	8	AN	SS S1 E6	Y. Y. Terashitai	Yume wa Yozora de Terashitai	f
 8	8	BD	Yuuki Setsuna			f
@@ -211,8 +251,10 @@ COPY public.events (day, month, type, details, short_note, note, notified) FROM 
 8	3	BD	Misaki Nako	Chisato	Arashi Chisato	f
 16	5	BD	Aoyama Nagisa	Ren	Hazuki Ren	f
 1	7	BD	Payton Naomi	Sumire	Heanna Sumire	f
-23	7	BD	Suzuki Aina	Mari	Mari's Seiyuu	t
-23	7	BD	Uchida Aya	Kotori	Kotori's Seiyuu	t
+23	7	BD	Suzuki Aina	Mari	Mari's Seiyuu	f
+23	7	BD	Uchida Aya	Kotori	Kotori's Seiyuu	f
+29	7	AN	SIP S2 E13	H. Maker	Happy Maker	f
+1	8	BD	Takami Chika			f
 \.
 
 
@@ -227,6 +269,21 @@ responses	{"694191159949393980":["J kêu cc","J kêu gì","J"],"hello":["Lô lô
 pre-notify-channel-id	694199808432537672
 notify-channel-id	694843380844331038
 \.
+
+
+--
+-- Data for Name: systemlog; Type: TABLE DATA; Schema: public; Owner: hiraki
+--
+
+COPY public.systemlog (id, "time", content) FROM stdin;
+\.
+
+
+--
+-- Name: systemlog_id_seq; Type: SEQUENCE SET; Schema: public; Owner: hiraki
+--
+
+SELECT pg_catalog.setval('public.systemlog_id_seq', 193, true);
 
 
 --
@@ -251,6 +308,14 @@ ALTER TABLE ONLY public.events
 
 ALTER TABLE ONLY public.settings
     ADD CONSTRAINT settings_pkey PRIMARY KEY (field);
+
+
+--
+-- Name: systemlog systemlog_pkey; Type: CONSTRAINT; Schema: public; Owner: hiraki
+--
+
+ALTER TABLE ONLY public.systemlog
+    ADD CONSTRAINT systemlog_pkey PRIMARY KEY (id);
 
 
 --

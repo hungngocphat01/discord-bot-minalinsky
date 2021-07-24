@@ -10,9 +10,11 @@
 #   gem
 
 # Discord modules
+from typing_extensions import runtime
+import dateutil
 from discord import message
 from discord.ext.commands.core import Command
-from Administration import is_admin
+from DatabaseManagement import is_admin, legacy_query_execute
 import discord
 from discord.ext import commands
 # Support modules
@@ -22,7 +24,7 @@ import platform
 import pytz
 import math
 # Main vars and funcs
-from BasicDefinitions import runningOnHeroku, ver, date, startTime, startTimeStr, getTime, COMMAND_PREFIX, session_state
+from BasicDefinitions import runningOnHeroku, ver, date, startTime, startTimeStr, getTime, session_state, bot_intro
 from Logging import *
 
 class BasicCommands(commands.Cog):
@@ -187,7 +189,7 @@ SQLAlchemy session: {session_state()}```"""
         await ctx.send(embed = embed)
 
     @commands.command()
-    async def journalctl(self, ctx, num=None):
+    async def journalctl(self, ctx, num=None, date=None):
         command_log(ctx)  
         arid = ctx.message.author.top_role.id
 
@@ -196,6 +198,13 @@ SQLAlchemy session: {session_state()}```"""
             log(e)
             await ctx.send(f"```{e}```")
             return
+        if (date is None):
+            date = datetime.strftime(datetime.now(), "%Y-%m-%d")
+
+        result = legacy_query_execute("select * from systemlog where date(time) = '%s'" % date)
+        runtime_logs = []
+        for r in result:
+            runtime_logs.append("[%s] " % datetime.strftime(r["time"], "%Y-%m-%d %H:%M") + r["content"])
 
         if num is not None:
             num = int(num)
@@ -212,6 +221,7 @@ SQLAlchemy session: {session_state()}```"""
         else:
             logmsg = "\n".join(runtime_logs)
 
+        logmsg = bot_intro + logmsg
         if (len(logmsg) > 2000):
             logmsg = log[len(logmsg)-1980:None]
             logmsg = "(Truncated)...\n" + log

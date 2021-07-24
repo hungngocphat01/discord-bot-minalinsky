@@ -67,6 +67,8 @@ class SendHelpMsg(commands.Cog):
         changelogContent = str()
         for line in changelogLines:
             changelogContent += line
+        if len(changelogContent) > 2000:
+            changelogContent = changelogContent[0:1960] + "\n(Truncated...)"
         
         await ctx.send(f"```{changelogContent}```")
     

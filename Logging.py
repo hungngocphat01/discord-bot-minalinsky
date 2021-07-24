@@ -1,6 +1,7 @@
 from os import replace
 from datetime import datetime
-runtime_logs = []
+from BasicDefinitions import Base, session
+from dateutil.parser import isoparse
 
 def log(*args):
     objs = list(args)
@@ -10,11 +11,18 @@ def log(*args):
     objs = [str(x) for x in objs]
     msg = " ".join(objs)
 
-    now = datetime.now().strftime("[%d-%m %H:%M] ")
-    msg = now + msg
+    now = datetime.now()
+    try:
+        SystemLog = Base.classes.systemlog
+        log_entry = SystemLog(time=now, content=msg)
+        session.add(log_entry)
+        session.commit()
+    except:
+        session.rollback()
+        raise
+    
+    print("[%s] " % datetime.strftime(now, "%Y-%m-%d %H:%M") + msg)
 
-    print(msg)
-    runtime_logs.append(msg)
 
 def command_log(ctx):
     log(f"In channel {ctx.message.channel}, {str(ctx.message.author)} invoked command: {ctx.message.content}")

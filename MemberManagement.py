@@ -5,8 +5,9 @@
 # whois
 
 import discord
+from discord import user
 from discord.ext import commands
-from Administration import *
+from DatabaseManagement import *
 from Logging import *
 import io
 from tqdm import tqdm
@@ -14,6 +15,7 @@ import time
 from BasicDefinitions import runningOnHeroku
 import random
 import sys 
+import pandas as pd
 
 class MemberManagement(commands.Cog):
     def __init__(self, bot):

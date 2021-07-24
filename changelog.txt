@@ -1,3 +1,6 @@
+# Ver 5.0.2
+- Migrate system journal to database.
+
 # Ver 5.0.1 (23/7/2021)
 - Fix potential SQL injection through eval command.
 

@@ -1,8 +1,12 @@
 import json 
-from BasicDefinitions import session, Base
-from sqlalchemy import create_engine, update
-from Logging import *
+# Database libraries
+import os
+import pandas as pd
+from Logging import log
+from BasicDefinitions import Base, session
+from tabulate import tabulate
 
+#############  Utility functions  #############
 def query_settings(field: str):
     Settings = Base.classes.settings
     try:
@@ -25,3 +29,20 @@ def mark_as_notified(day, month):
     except:
         session.rollback()
         raise
+
+def legacy_query_execute(sql: str):
+    if not session.is_active:
+        log("Database session is not active")
+        return None 
+    
+    # Execute sql
+    try:
+        resultproxy = session.execute(sql)
+        return [x._asdict() for x in resultproxy]
+    except:
+        session.rollback()
+        raise 
+
+def tabular_format(lst: list):
+    df = pd.DataFrame(lst)
+    return tabulate(df, headers="keys")

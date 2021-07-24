@@ -12,7 +12,7 @@ import re
 import random
 import os
 from datetime import datetime
-from Administration import query_settings
+from DatabaseManagement import query_settings
 from EventQuery import EventQuery
 from Logging import *
 

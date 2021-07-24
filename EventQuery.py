@@ -4,7 +4,7 @@ import discord
 import tabulate
 from discord.ext import commands
 from datetime import date, datetime
-from Administration import is_admin, query_settings, mark_as_notified
+from DatabaseManagement import is_admin, query_settings, mark_as_notified, legacy_query_execute, tabular_format
 from BasicDefinitions import COMMAND_PREFIX, runningOnHeroku, session
 import pandas as pd
 from tabulate import tabulate
@@ -12,23 +12,6 @@ from Logging import *
 import os
 
 #select * from events where month=7 and day = (select min(day) from events where month = 7 and day >= extract(day from now()));
-
-def legacy_query_execute(sql: str):
-    if not session.is_active:
-        log("Database session is not active")
-        return None 
-    
-    # Execute sql
-    try:
-        resultproxy = session.execute(sql)
-        return [x._asdict() for x in resultproxy]
-    except:
-        session.rollback()
-        raise 
-
-def tabular_format(lst: list):
-    df = pd.DataFrame(lst)
-    return tabulate(df, headers="keys")
 
 class EventQuery(commands.Cog):
     def __init__(self, bot):
@@ -60,14 +43,14 @@ class EventQuery(commands.Cog):
         this_year = datetime.now().year
         notification_filter = ""
         if ignore_notified:
-            notification_filter = "notified='false' and"
+            notification_filter = "and notified='false'"
 
         sql = f"""select * 
 from events 
-where {notification_filter} make_date({this_year}, month, day) = (
+where make_date({this_year}, month, day) = (
     select min(make_date({this_year}, month, day)) 
     from events 
-    where make_date({this_year}, month, day) >= now()::date
+    where make_date({this_year}, month, day) >= now()::date {notification_filter}
 );"""   
         return legacy_query_execute(sql)
 
@@ -77,11 +60,21 @@ where {notification_filter} make_date({this_year}, month, day) = (
         parts.append("**Sự kiện sắp tới:**")
 
         for event in events:
+            s: str
             if event["type"] == "BD":
-                desc = "(%s)" % event["note"] if len(event["note"]) > 0 else "\b"
-                s = "- Sinh nhật của %s %s vào ngày %d/%d." % (
-                    event["details"], desc, int(event["day"]), int(event["month"]))
-                parts.append(s)
+                desc = " (%s)" % event["note"] if len(event["note"]) > 0 else ""
+                s = "- Sinh nhật của %s%s" % (event["details"], desc)
+            elif event["type"] == "PV":
+                s = "- PV '%s' (%s) đã được ra mắt" % (event["details"], event["note"])
+            elif event["type"] == "AN":
+                s = "- Tập anime '%s' đã được chiếu, có insert song: '%s'" % (event["details"], event["note"])
+            elif event["type"] == "RE":
+                s = "- Đĩa đơn '%s' (%s) đã được ra mắt" % (event["details"], event["note"])
+            elif event["type"] == "SP":
+                s - "- Sự kiện đặc biệt: %s" % event["details"] 
+            s += " vào ngày %d/%d." % (event["day"], event["month"])
+            parts.append(s)
+            
         return "\n".join(parts)
     
     @commands.command()
@@ -103,20 +96,23 @@ where {notification_filter} make_date({this_year}, month, day) = (
         if len(events) == 0:
             log("No next event to display.")
             return            
-        print(events)
+        log(events[0]["day"], events[0]["month"], events[0]["type"], events[0]["details"])
         event_day = int(events[0]["day"])
         event_month = int(events[0]["month"])
         event_date = datetime(datetime.now().year, event_month, event_day)
-        date_diff = datetime.now() - event_date
+        date_diff = event_date - datetime.now()
+
+        log("Date difference until next:", date_diff)
 
         if date_diff.days in [2, 3]:
             notify_channel_id = query_settings("pre-notify-channel-id")
-        elif date_diff.days <= 1:
+        elif date_diff.days in [0, 1]:
             notify_channel_id = query_settings("notify-channel-id")
             mark_as_notified(event_day, event_month)
         else:
+            log("Next event does not lie within notify range.")
             return
         
         destination_channel: discord.TextChannel = bot.get_channel(notify_channel_id)
-
         await destination_channel.send(content=EventQuery.make_vietnamese_notification(events))
+        log(f"Message sent to {str(destination_channel)}")

@@ -1,4 +1,4 @@
-__pycache__/
-start-local.sh
 .vscode/
 tmp/
+init-env.sh
+node_modules/

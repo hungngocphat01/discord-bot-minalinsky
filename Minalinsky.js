@@ -12,8 +12,8 @@ const token = process.env.BOT_TOKEN;
 const client = new Client({ intents: [
 	Intents.FLAGS.GUILDS, 
 	Intents.FLAGS.GUILD_MEMBERS, 
+	Intents.FLAGS.GUILD_MESSAGES,
 	Intents.FLAGS.GUILD_MESSAGE_REACTIONS, 
-	Intents.FLAGS.DIRECT_MESSAGE_REACTIONS, 
 	Intents.FLAGS.GUILD_PRESENCES, 
 	Intents.FLAGS.GUILD_EMOJIS_AND_STICKERS
 ] });
@@ -41,6 +41,7 @@ modules.forEach((module) => {
 const eventFiles = fs.readdirSync('./controller/events').filter(file => file.endsWith('.js'));
 for (const file of eventFiles) {
 	const event = require(`./controller/events/${file}`);
+	console.log(`Loaded event: ${event.name}`);
 	if (event.once) {
 		client.once(event.name, (...args) => event.execute(...args));
 	} else {

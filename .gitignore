@@ -1,4 +1,4 @@
+.env
 .vscode/
 tmp/
-init-env.sh
 node_modules/

@@ -13,7 +13,6 @@ require('dotenv').config();
 	// Import neccessary libraries
 	const { Client, Collection, Intents } = require('discord.js');
 	const fs = require('fs');
-	const { setTimeout } = require('timers/promises');
 	const botintro = require('./controller/utils/botintro');
 	global.logger = require('./controller/utils/logger');
 	

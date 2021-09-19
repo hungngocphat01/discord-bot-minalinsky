@@ -1,3 +1,8 @@
+# Ver 6.0 (?/?/2021)
+- Rewrite the bot in `discord.js`.
+- The bot now supports slash commands.
+- Remove beginner testing commands.
+
 # Ver 5.0.2 (24/07/2021)
 - Migrate system journal to database.
 - Fix empty Vietnamese notification message.

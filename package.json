@@ -1,0 +1,31 @@
+{
+  "name": "discord-bot-minalinsky",
+  "styled-name": "Minalinsky Javascript Rewrite",
+  "version": "6.0-js",
+  "last-updated": "September 2021",
+  "description": "",
+  "main": "Minalinsky.js",
+  "scripts": {
+    "deploy": "nodemon deploy-commands.js",
+    "start": "nodemon Minalinsky.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hungngocphat01/discord-bot-minalinsky.git"
+  },
+  "author": "Hùng Ngọc Phát",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hungngocphat01/discord-bot-minalinsky/issues"
+  },
+  "homepage": "https://github.com/hungngocphat01/discord-bot-minalinsky#readme",
+  "dependencies": {
+    "@discordjs/builders": "^0.6.0",
+    "@discordjs/rest": "^0.1.0-canary.0",
+    "discord-api-types": "^0.23.1",
+    "discord.js": "^13.1.0",
+    "dotenv": "^10.0.0",
+    "pg": "^8.7.1"
+  }
+}

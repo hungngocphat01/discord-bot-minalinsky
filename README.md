@@ -11,13 +11,19 @@
 - This bot was originally written in Python when I was a first year student (with `discord.py`) and was the largest project (with over a thousand lines of Python code) I have ever made until it was deprecated. In August 2021, `discord.py` became deprecated, so I decided to migrate this bot to `discord.js`. A lot of legacy features (beginner developer's useless stuff) had been removed from the bot. I also reorganized the source code in the MVC model (maybe) for better maintainability.
 
 ## Features
-- [ ] Key feature: querying upcoming events of the Love Live! franchise (with MongoDB backend).
-- [ ] Automatically notify upcoming events in certain channels (hard-coded in the database).
+- [x] Key feature: querying upcoming events of the Love Live! franchise (with PostgreSQL backend).
+- [x] Automatically notify upcoming events in certain channels (hard-coded in the database).
 - [x] Some basic commands like say, status, purge (delete messages)...
 - [ ] Auto react to certain messages containing certain emojis.
 - [ ] Response to hello, bye, g9, etc. (pre-programmed responses in the database).
 - [ ] Approximate the value of a particular amount of love gem (SIF/SIFAS) in USD and VND.
-- [ ] etc. (read the source code yourself).
+- etc. (read the source code yourself).
+
+## TODO
+- [ ] Prettify embeds.
+- [ ] Confirmation (with buttons) when calling `purge`.
+- [ ] Implement help command.
+- [ ] Implement logging database and `journalctl`.
 
 ## Build & run
 ``` bash 

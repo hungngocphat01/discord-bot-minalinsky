@@ -19,6 +19,11 @@ function decideChannel(eventDate, today) {
 }
 
 function notifier (client) {
+    if (process.env.SEND_NEXT_EV != 1) {
+        logger('Explicitly asked not to send next event.');
+        return;
+    }
+
     Event.fetchNextEvents().then(async (events) => {
         logger(`Next events: ${events.length}`);
         logger(JSON.stringify(events));

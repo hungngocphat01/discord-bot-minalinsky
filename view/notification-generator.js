@@ -5,7 +5,7 @@ function generateEmbed(event) {
     let type = '';
     switch (event.type) {
         case 'BD': type = 'Sinh nhật'; break;
-        case 'AN': type = 'Anime'; break;
+        case 'AN': type = 'Tập anime có insert song'; break;
         case 'SP': type = 'Ngày đặc biệt'; break;
         case 'PV': type = 'Promotional Video (PV)'; break;
         case 'RE': type = 'Album/single'; break;
@@ -21,7 +21,8 @@ function generateEmbed(event) {
         .setAuthor(type)
         .setTitle(title)
         .setDescription(date)
-        .addField('Chú thích', note);
+        .addField('Chú thích', note)
+        .setFooter('Sự kiện sắp xảy ra')
     return embed;
 }
 

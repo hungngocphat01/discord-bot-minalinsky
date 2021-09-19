@@ -7,7 +7,7 @@ module.exports = {
 		.setName('nextev')
 		.setDescription('Get next Love Live! event(s)'),
 	async execute(interaction) {
-        const nextEvents = await Event.fetchNextEvents();
+        const nextEvents = await Event.fetchNextEvents(true);
         const embeds = Generator.generateNotifEmbeds(nextEvents);
         await interaction.reply({ embeds: embeds });
 	},

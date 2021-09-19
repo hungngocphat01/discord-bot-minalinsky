@@ -6,6 +6,8 @@
   "description": "",
   "main": "Minalinsky.js",
   "scripts": {
+    "deploy": "nodemon deploy-commands.js",
+    "start": "nodemon Minalinsky.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

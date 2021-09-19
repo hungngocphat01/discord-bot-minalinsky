@@ -14,9 +14,9 @@ module.exports = {
 		const members = await guild.members.fetch();
 		let boosters = members.filter((mem) => mem.premiumSinceTimestamp != undefined);
 		boosters = boosters.map(m => m.toString());
-		boosters = boosters.size > 0 ? boosters.join(` `) : 'None';
+		boosters = boosters.length > 0 ? boosters.join(` `) : 'None';
 
-		const channelCount = (await interaction.guild.channels.fetch()).size;
+		const channelCount = (await interaction.guild.channels.fetch()).length;
 		const nonBotOnlineMembers = members.filter((mem) => !mem.user.bot && (mem.presence != undefined));
 		const botMembers = members.filter(mem => mem.user.bot);
 		const owner = await guild.fetchOwner();
@@ -25,8 +25,8 @@ module.exports = {
 			.setAuthor(interaction.guild.name, interaction.guild.iconURL({ size: 2048 }))
 			.addField("Channels", channelCount.toString(), true)
 			.addField("Members", guild.approximateMemberCount.toString(), true)
-			.addField("Online members (non-bot)", nonBotOnlineMembers.size.toString(), false)
-			.addField("Bot members: ", botMembers.size.toString(), true)
+			.addField("Online members (non-bot)", nonBotOnlineMembers.length.toString(), false)
+			.addField("Bot members: ", botMembers.length.toString(), true)
 			.addField("Contributors", boosters, false)
 			.addField("Boost level", guild.premiumTier.toString(), true)
 			.addField("Boost quantity", guild.premiumSubscriptionCount.toString(), true)

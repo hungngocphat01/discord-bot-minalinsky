@@ -12,7 +12,8 @@ module.exports = {
         statusString += `\nBot started at: ${global.botStatus["start_time"]}`;
         statusString += `\nRunning on Heroku: ${global.botStatus["on_heroku"]}`;
         statusString += `\nHost operating system: ${os.type()} ${os.release()}`;
-        statusString += `\nCurrent server: ${interaction.guild.name}`;
+        statusString += `\nCurrent server: ${interaction.guild.name}`
+		statusString += `\nDebug mode: ${global.botStatus["debug_mode"]}`;
         await interaction.reply(codeBlock(statusString));
 	},
 };

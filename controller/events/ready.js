@@ -5,6 +5,6 @@ module.exports = {
 	once: true,
 	execute(client) {
 		nextEventNotifier(client);
-		console.log(`Ready! Logged in as ${client.user.tag}`);
+		logger(`Ready! Logged in as ${client.user.tag}`);
 	},
 };

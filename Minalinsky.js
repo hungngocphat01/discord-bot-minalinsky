@@ -1,10 +1,15 @@
-// Require the necessary discord.js classes
+// Init database and import settings
+require('dotenv').config();
+require('./controller/utils/loadconfig');
+
+// Import neccessary libraries
 const { Client, Collection, Intents } = require('discord.js');
 const fs = require('fs');
+const { setTimeout } = require('timers/promises');
 const botintro = require('./controller/utils/botintro');
-require('dotenv').config();
+global.logger = require('./controller/utils/logger');
 
-console.log(botintro.getHeader());
+logger(botintro.getHeader());
 
 // Initialize client
 const token = process.env.BOT_TOKEN;
@@ -28,7 +33,7 @@ const COMMANDS_DIR = "./controller/commands";
 client.commands = new Collection();
 const modules = fs.readdirSync(COMMANDS_DIR);
 modules.forEach((module) => {
-	console.log(`Loaded module: ${module}`);
+	(`Loaded module: ${module}`);
 	const moduleFiles = fs.readdirSync(`${COMMANDS_DIR}/${module}`);
 
 	for (const file of moduleFiles) {
@@ -49,4 +54,5 @@ for (const file of eventFiles) {
 	}
 }
 
+// Login to discord
 client.login(token);

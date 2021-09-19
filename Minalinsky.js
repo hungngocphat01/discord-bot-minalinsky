@@ -1,4 +1,11 @@
 require('dotenv').config();
+(() => {
+	console.log('Confirming all environment variables are set correctly.');
+	console.log('DATABASE_URL: ', process.env.DATABASE_URL);
+	console.log('CLIENT_ID: ', process.env.CLIENT_ID);
+	console.log('GUILD_ID: ', process.env.GUILD_ID);
+})();
+
 (async() => {
 	// Must get database connection and load config before doing anything else
 	await require('./controller/utils/loadconfig')();

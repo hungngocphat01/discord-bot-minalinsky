@@ -14,8 +14,8 @@
 - [x] Key feature: querying upcoming events of the Love Live! franchise (with PostgreSQL backend).
 - [x] Automatically notify upcoming events in certain channels (hard-coded in the database).
 - [x] Some basic commands like say, status, purge (delete messages)...
-- [ ] Auto react to certain messages containing certain emojis.
-- [ ] Response to hello, bye, g9, etc. (pre-programmed responses in the database).
+- [x] Auto react to certain messages containing certain emojis.
+- [x] Response to hello, bye, g9, etc. (pre-programmed responses in the database).
 - [ ] Approximate the value of a particular amount of love gem (SIF/SIFAS) in USD and VND.
 - etc. (read the source code yourself).
 

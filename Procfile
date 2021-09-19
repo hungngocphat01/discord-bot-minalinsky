@@ -1,1 +1,1 @@
-worker: python Minalinsky.py
+worker: node Minalinsky.py

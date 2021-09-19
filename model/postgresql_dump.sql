@@ -153,15 +153,6 @@ COPY public.events (day, month, type, details, short_note, note, notified) FROM 
 17	1	BD	Koizumi Hanayo			f
 20	1	AN	SIP S1 E3	S. Dash	START: DASH	f
 23	1	BD	Nakasu Kasumi			f
-31	1	BD	Kubota Miyu	Karin	Karin's Seiyuu	f
-1	2	BD	Kusuda Aina	Nozomi	Nozomi's Seiyuu	f
-5	2	BD	Emma Verde			f
-5	2	BD	Komiya Arisa	Dia	Dia's Seiyuu	f
-7	2	BD	Inami Anju	Chika	Chika's Seiyuu	f
-10	2	BD	Matsuura Kanan			f
-10	2	AN	SIP S1 E6	K. Someday	Korekara no Someday	f
-15	2	PV	Mogyutto Love de Sekkinchuu!	2012	2012	f
-19	2	BD	Furihata Ai	Ruby	Ruby's Seiyuu	f
 22	2	BD	Kusunoki Tomori	Setsuna	Setsuna's Seiyuu	f
 25	2	BD	Arashi Chisato			f
 27	2	BD	Koizumi Moeka	Shioriko	Shioriko's Seiyuu	f
@@ -211,8 +202,6 @@ COPY public.events (day, month, type, details, short_note, note, notified) FROM 
 10	9	AN	SS S1 E11	O. H. ni Nare	Omoiyo Hitotsu ni Nare	f
 12	9	BD	Minami Kotori			f
 19	9	BD	Sakurauchi Riko			f
-20	9	BD	Sashide Maria	Emma	Emma's Seiyuu	f
-21	9	BD	Kurosawa Ruby			f
 24	9	AN	SS S1 E13	Mirai Ticket	Mirai Ticket	f
 25	9	PV	Mitaiken Horizon	2019	2019	f
 25	9	BD	Takatsuki Kanako	Hanamaru	Hanamaru's Seiyuu	f
@@ -255,6 +244,17 @@ COPY public.events (day, month, type, details, short_note, note, notified) FROM 
 23	7	BD	Uchida Aya	Kotori	Kotori's Seiyuu	f
 29	7	AN	SIP S2 E13	H. Maker	Happy Maker	f
 1	8	BD	Takami Chika			f
+20	9	BD	Sashide Maria	Emma	Emma's Seiyuu	t
+21	9	BD	Kurosawa Ruby			t
+31	1	BD	Kubota Miyu	Karin	Karin's Seiyuu	f
+1	2	BD	Kusuda Aina	Nozomi	Nozomi's Seiyuu	f
+5	2	BD	Emma Verde			f
+5	2	BD	Komiya Arisa	Dia	Dia's Seiyuu	f
+7	2	BD	Inami Anju	Chika	Chika's Seiyuu	f
+10	2	BD	Matsuura Kanan			f
+10	2	AN	SIP S1 E6	K. Someday	Korekara no Someday	f
+15	2	PV	Mogyutto Love de Sekkinchuu!	2012	2012	f
+19	2	BD	Furihata Ai	Ruby	Ruby's Seiyuu	f
 \.
 
 
@@ -263,11 +263,13 @@ COPY public.events (day, month, type, details, short_note, note, notified) FROM 
 --
 
 COPY public.settings (field, value) FROM stdin;
-admin_role_ids	[703534853001314344,694197858127052810]
-emoji_replies	["ponk", "chonk", "yuusuffer"]
-responses	{"694191159949393980":["J kêu cc","J kêu gì","J"],"hello":["Lô lô cc","Konnichiwa~"],"g9|good night|oyasumi|đi ngủ":["Oyasuminasaiiiii~","J ngủ ngon","J chúc gặp nhiều ác mộng nha","J giờ này mà ngủ à. Sớm thế"],"bye":["Mata ne~~","Jaa ne~","Byeee~","J đi luôn đi"],"đảng|đcs|cộng sản":["<:dang:694251236895227965> <:dang:694251236895227965> <:dang:694251236895227965>"]}
-pre-notify-channel-id	694199808432537672
-notify-channel-id	694843380844331038
+pre-notify-channel-id	"694199808432537672"
+notify-channel-id	"694843380844331038"
+admin-roles-ids	["703534853001314344","694197858127052810"]
+debug-channel-id	"749823581092839424"
+emoji-react-signs	["ponk", "chonk", "yuusuffer", "marikek", "kanatasleep", "rikohmm", "makihuh"]
+random-resp-signs	{"694191159949393980":{"threshold":1,"replies":["J kêu cc","J kêu gì","J"]},"hello":{"threshold":0.7,"replies":["Lô lô cc","Konnichiwa~"]},"g9|good night|oyasumi|đi ngủ":{"threshold":1,"replies":["Oyasuminasaiiiii~","J ngủ ngon","J chúc gặp nhiều ác mộng nha","J giờ này mà ngủ à. Sớm thế"]},"bye":{"threshold":1,"replies":["Mata ne~~","Jaa ne~","Byeee~","J đi luôn đi"]},"đảng|đcs|cộng sản":{"threshold":0.5,"replies":["<:dang:694251236895227965> <:dang:694251236895227965> <:dang:694251236895227965>"]}}
+server-owner-id	"526086033025269760"
 \.
 
 

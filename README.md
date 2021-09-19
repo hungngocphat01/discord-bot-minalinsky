@@ -20,6 +20,7 @@
 - etc. (read the source code yourself).
 
 ## TODO
+- [ ] Add images to notification.
 - [ ] Prettify embeds.
 - [ ] Confirmation (with buttons) when calling `purge`.
 - [ ] Implement help command.

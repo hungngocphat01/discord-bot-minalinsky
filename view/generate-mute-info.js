@@ -13,13 +13,16 @@ const TimeConverter = require('./convert-time');
 //     }
 //
 
+// Generate an embed, displaying info of muted member
 function generateMuteEmbed(row) {
-    const { begin_time, reason, display_name, secs_left } = row;
+    const { begin_time, reason, display_name, secs_left, color, avatar } = row;
     const embed = new MessageEmbed()
         .setAuthor(display_name)
+        .setImage(avatar)
         .addField('Time left', TimeConverter.fromSeconds(secs_left))
         .addField('Reason', reason)
-        .addField('Muted since', begin_time.toString());
+        .addField('Muted since', begin_time.toString())
+        .setColor(color);
     return embed;
 }
 

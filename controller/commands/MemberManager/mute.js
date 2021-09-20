@@ -28,8 +28,10 @@ const commandData = {
             .setDescription('List all members that are being muted')
         ),
 	async execute(interaction) {
+        await interaction.deferReply();
+
         const subCommand = interaction.options.getSubcommand();
-        const user = interaction.options.getMember('member');
+        const member = interaction.options.getMember('member');
         const time = interaction.options.getInteger('time');
         const unit = interaction.options.getString('unit');
         let reason = interaction.options.getString('reason');
@@ -37,41 +39,53 @@ const commandData = {
 
         // ========================= MUTE SET =========================
         if (subCommand == 'set') {
-            const id = user.id;
+            const id = member.id;
             const secs = TimeConverter.toSeconds(time, unit);
 
             // Call database
             const mute = await AdminTools.muteMember(id, reason, secs);
             if (!mute) {
-                await interaction.reply(codeBlock(`Member is already muted. Please unmute to change time.`));
+                await interaction.editReply(codeBlock(`Member is already muted. Please unmute to change time.`));
                 return;
             }
-
+            
+            // Call Discord API
             const muteRole = interaction.guild.roles.cache.find(r => r.id == global.botConfig['server-mute-role']);
-            await user.roles.add(muteRole);
-            await interaction.reply(codeBlock(`Muted '${user.displayName}' for ${time} ${unit}(s)\nReason: ${reason}`));
+            await member.roles.add(muteRole);
+            
+            // Generate embed
+            const muteInfo = {
+                display_name: member.displayName,
+                color: member.roles.highest.color,
+                begin_time: new Date(),
+                reason: reason,
+                secs_left: secs,
+                avatar: member.user.avatarURL()
+            };
+            const embed = MuteEmbed.generateMuteEmbed(muteInfo);
+            await interaction.editReply({ embeds: [embed] });
         }
         // ========================= MUTE UNSET =========================
         else if (subCommand == 'unset') {
-            const id = user.id;
+            const id = member.id;
             const secs = TimeConverter.toSeconds(time, unit);
 
             // Call database
             const unmute = await AdminTools.unmuteMember(id);
             if (!unmute) {
-                await interaction.reply(codeBlock(`Member not muted. Cannot unmute.`));
+                await interaction.editReply(codeBlock(`Member not muted. Cannot unmute.`));
                 return;
             }
 
             const muteRole = interaction.guild.roles.cache.find(r => r.id == global.botConfig['server-mute-role']);
-            await user.roles.remove(muteRole);
-            await interaction.reply(codeBlock(`Unmuted '${user.displayName}'`));
+            await member.roles.remove(muteRole);
+            await interaction.editReply(codeBlock(`Unmuted '${member.displayName}'`));
         }
         // ========================= MUTE LIST =========================
         else {
             const muteList = await AdminTools.listMutedMembers();  
             if (!muteList || muteList.length == 0) {
-                await interaction.reply(codeBlock('No one is being muted'));
+                await interaction.editReply(codeBlock('No one is being muted'));
                 return;
             }
 
@@ -79,6 +93,8 @@ const commandData = {
             for (const entry of muteList) {
                 const member = await interaction.guild.members.fetch(entry['userid']);
                 entry['display_name'] = member.displayName;
+                entry['color'] = member.roles.highest.color;
+                entry['avatar'] = member.user.avatarURL();
                 
                 let endTime = entry['begin_time'];
                 endTime.setSeconds(endTime.getSeconds() + entry['interval']);
@@ -88,7 +104,7 @@ const commandData = {
             
             // Generate embed and send back to client
             const embeds = MuteEmbed.generateMuteEmbeds(muteList);
-            await interaction.reply({ embeds: embeds });
+            await interaction.editReply({ embeds: embeds });
         }
 	},
     permissions: [

@@ -1,3 +1,9 @@
+# Version 6.1 (21/9/2021)
+- Add color to mute embed.
+- Auto fetch thumbnail from Google for event notification.
+- Notify maintainer when error happens.
+- Notifications now more verbose (splitted to different functions).
+
 # Ver 6.0 (20/9/2021)
 - Rewrite the bot in `discord.js`.
 - The bot now supports slash commands.

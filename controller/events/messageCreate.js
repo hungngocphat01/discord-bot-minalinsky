@@ -64,6 +64,7 @@ module.exports = {
 			await processRandomReplies(msgObj);
 		} catch (e) {
 			logger(`Error when try processing message: '${msgObj.toString().substring(0, 30)}' \nCallstack: ${e.stack}`)
+			await MaintainerNotifier(msgObj.client, e).then(v => logger(`Error sent`));
 		}
 	},
 };

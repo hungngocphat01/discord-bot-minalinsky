@@ -1,4 +1,5 @@
 const { codeBlock } = require('@discordjs/builders');
+const MaintainerNotifier = require('../utils/notify-err-maintainer');
 
 function parseInteractionArgs(interaction) {
 	const options = interaction.options._hoistedOptions;
@@ -27,7 +28,13 @@ module.exports = {
 			await command.execute(interaction);
 		} catch (e) {
 			logger(e.stack);
-			await interaction.reply(`Something went wrong when executing your command:\n ${codeBlock(e.stack)}`);
+			const message = `Something went wrong when executing your command:\n ${codeBlock(e.stack)}`;
+			try {
+				await interaction.reply(message);
+			} catch (e2) {
+				await interaction.editReply(message);
+			}
+			await MaintainerNotifier(interaction.client, '');
 		}
 	},
 };

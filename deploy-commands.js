@@ -1,12 +1,7 @@
-// Init database and import settings
 require('dotenv').config();
-global.logger = console.log;
-const configLoader = require('./model/getconfig');
-
 (async() => {
-	console.log('Waiting for database...');
-	const config = await configLoader();
-	global.botConfig = config;
+	// Must get database connection and load config before doing anything else
+	await require('./controller/utils/loadconfig')();
 	console.log('Config loaded.');
 	
 	const fs = require('fs');

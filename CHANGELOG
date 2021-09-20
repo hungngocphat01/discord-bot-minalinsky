@@ -1,7 +1,8 @@
-# Ver 6.0 (?/?/2021)
+# Ver 6.0 (20/9/2021)
 - Rewrite the bot in `discord.js`.
 - The bot now supports slash commands.
 - Remove beginner testing commands.
+- New feature: mute member.
 
 # Ver 5.0.2 (24/07/2021)
 - Migrate system journal to database.

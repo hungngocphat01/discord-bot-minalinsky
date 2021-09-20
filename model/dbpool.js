@@ -4,9 +4,9 @@ const connectionString = process.env.DATABASE_URL;
 console.log('Database is being initialized...');
 let pool = new Pool({
     connectionString,
-    ssl: {
+    ssl: (process.env.RUNNING_ON_HEROKU == 1) ? {
         rejectUnauthorized: false
-    }
+    } : undefined,
 });
 
 pool.once('connect', client => {

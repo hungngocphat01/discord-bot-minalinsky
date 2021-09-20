@@ -8,7 +8,7 @@ module.exports = {
 		// Send next event
 		nextEventNotifier(client);
 		// Start mute checker 
-		setInterval(muteClockCallback, 60000);		
+		setInterval(() => muteClockCallback(client), 60000);		
 
 		logger(`Ready! Logged in as ${client.user.tag}`);
 	},

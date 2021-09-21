@@ -6,7 +6,19 @@ async function fetchAllEvents() {
         text: 'select * from events;',
     };
     const result = await pool.query(query);
-    return result;
+    return result.rows;
+}
+
+async function fetchEventInMonth(month) {
+    const query = {
+        text: `select day, type, details, note 
+            from events 
+            where month=$1
+            order by day asc;`,
+        values: [month]
+    };
+    const result = await pool.query(query);
+    return result.rows; 
 }
 
 async function fetchNearestDate(all = false) {
@@ -74,5 +86,6 @@ module.exports = {
     fetchAllEvents,
     fetchNearestDate,
     fetchNextEvents,
-    markAsNotified
+    markAsNotified,
+    fetchEventInMonth
 };

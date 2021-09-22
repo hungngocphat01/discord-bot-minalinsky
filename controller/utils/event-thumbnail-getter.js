@@ -15,8 +15,10 @@ module.exports = async function(event) {
     if(event['specific_source']) {
         return event['source'];
     }
+    logger(`Getting thumbnail for '${event['details']}'...`);
     const stablizer = (event['type'] == 'BD') ? ' card' : '';
     const images = await get(event['details'] + stablizer, event['source'], 10);
     const randomIndex = Math.floor(Math.random() * images.length);
+    logger(`OK: '${event['details']}'`);
     return images[randomIndex]['url'];
 };

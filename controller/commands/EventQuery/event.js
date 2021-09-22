@@ -21,7 +21,7 @@ module.exports = {
 		if (subcommand == 'next') {
 			const nextEvents = await Event.fetchNextEvents(true);
 			const embeds = await Generator.generateNotifEmbeds(nextEvents);
-			await interaction.reply({ embeds: embeds });
+			await interaction.editReply({ embeds: embeds });
 	
 			// Add picture
 			for (const [index, row] of nextEvents.entries()) {

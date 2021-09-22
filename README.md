@@ -2,7 +2,8 @@
 
 ![JavaScript](https://img.shields.io/badge/javascript-%23323330.svg?style=for-the-badge&logo=javascript&logoColor=%23F7DF1E) 
 ![Discord](https://img.shields.io/badge/%3CServer%3E-%237289DA.svg?style=for-the-badge&logo=discord&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB-%234ea94b.svg?style=for-the-badge&logo=mongodb&logoColor=white)
+![Postgres](https://img.shields.io/badge/postgres-%23316192.svg?style=for-the-badge&logo=postgresql&logoColor=white)
+![Heroku](https://img.shields.io/badge/heroku-%23430098.svg?style=for-the-badge&logo=heroku&logoColor=white)
 
 ## Introduction
 - This is a mini-bot that I wrote to serve as my administrative helper for my small Discord server of _Love Live Nijigasak'ic Forever VN_ (hence it's named _Minalinsky_, the legendary maid in the Love Live! universe).
@@ -21,7 +22,7 @@
 
 ## TODO
 - [x] Implement authorization.
-- [ ] Add images to notification.
+- [x] Add images to notification.
 - [ ] Prettify embeds.
 - [ ] Confirmation (with buttons) when calling `purge`.
 - [ ] Implement help command.

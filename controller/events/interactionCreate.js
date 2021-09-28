@@ -29,12 +29,7 @@ module.exports = {
 		} catch (e) {
 			logger(e.stack);
 			const message = `Something went wrong when executing your command:\n ${codeBlock(e.stack)}`;
-			try {
-				await interaction.reply(message);
-			} catch (e2) {
-				await interaction.editReply(message);
-			}
-			await MaintainerNotifier(interaction.client, '');
+			await MaintainerNotifier(interaction.client, message, interaction);
 		}
 	},
 };

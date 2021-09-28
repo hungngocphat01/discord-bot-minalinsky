@@ -1,8 +1,8 @@
 {
   "name": "discord-bot-minalinsky",
   "styled-name": "Minalinsky Javascript Rewrite",
-  "version": "6.0-js",
-  "last-updated": "September 2021",
+  "version": "6.1.1-js",
+  "last-updated": "28/09/2021",
   "description": "",
   "main": "Minalinsky.js",
   "scripts": {

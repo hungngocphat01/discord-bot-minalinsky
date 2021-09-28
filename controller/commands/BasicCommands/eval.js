@@ -1,4 +1,5 @@
 const { SlashCommandBuilder, codeBlock } = require('@discordjs/builders');
+const { Event } = require('../../../model/events');
 
 module.exports = {
 	data: new SlashCommandBuilder()

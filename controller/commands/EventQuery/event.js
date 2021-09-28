@@ -12,7 +12,10 @@ module.exports = {
 			subcommand.setName('next').setDescription('Get next Love Live! event.'))
 		.addSubcommand(subcommand => 
 			subcommand.setName('inmonth').setDescription('Get events in a specific month')
-				.addIntegerOption(o => o.setName('month').setDescription('month to get event').setRequired(true))),
+				.addIntegerOption(o => o.setName('month').setDescription('month to get event').setRequired(true)))
+		.addSubcommand(subcommand => 
+			subcommand.setName('sql').setDescription('Execute a PostgreSQL statement on the events database')
+				.addStringOption(o => o.setName('statement').setDescription('SQL statement').setRequired(true))),
 	async execute(interaction) {
 		await interaction.deferReply();
 		const subcommand = interaction.options.getSubcommand();

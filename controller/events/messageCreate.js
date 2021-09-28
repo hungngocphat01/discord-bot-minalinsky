@@ -56,7 +56,7 @@ async function processRandomReplies(msgObj) {
 module.exports = {
 	name: 'messageCreate',
 	async execute(msgObj) {
-		if (global.botStatus.debug_mode == true) {
+		if (global.botStatus.debug_mode == true || msgObj.author.bot) {
 			return;
 		}
 		try {

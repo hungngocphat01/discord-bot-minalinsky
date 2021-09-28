@@ -13,7 +13,7 @@ module.exports = {
 		}
 		catch (error) {
 			logger(`Cannot send next event. Error: ${error}`);
-			MaintainerNotifier(client, `Cannot send next event. ${error}`).then(v => logger(`Error sent`));
+			MaintainerNotifier(client, codeBlock(`Cannot send next event. ${error}`)).then(v => logger(`Error sent`));
 		}
 		
 		// Start mute checker 

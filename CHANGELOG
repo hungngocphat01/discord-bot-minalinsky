@@ -1,3 +1,6 @@
+# Version 6.1.1 (28/9/2021)
+- Fix the bot replying to itself.
+
 # Version 6.1 (21/9/2021)
 - Add color to mute embed.
 - Auto fetch thumbnail from Google for event notification.
